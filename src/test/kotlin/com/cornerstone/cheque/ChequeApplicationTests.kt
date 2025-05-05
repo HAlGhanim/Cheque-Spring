@@ -1,4 +1,4 @@
-package com.example.cheque
+package com.cornerstone.cheque
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest

@@ -1,4 +1,4 @@
-package com.example.cheque
+package com.cornerstone.cheque
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
