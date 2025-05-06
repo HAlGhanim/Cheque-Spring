@@ -26,6 +26,9 @@ class TransactionController(private val service: TransactionService,
             if (sender.balance < request.amount)
                 return ResponseEntity.badRequest().body(mapOf("error" to "Insufficient balance"))
 
+            if (request.amount > sender.spendingLimit)
+                return ResponseEntity.badRequest().body(mapOf("error" to "Exceeded the Limit"))
+
             sender.balance -= request.amount
             receiver.balance += request.amount
 
