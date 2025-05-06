@@ -1,5 +1,6 @@
-package com.cornerstone.cheque.auth.jwt
+package com.cornerstone.cheque.auth
 
+import com.cornerstone.cheque.auth.jwt.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager

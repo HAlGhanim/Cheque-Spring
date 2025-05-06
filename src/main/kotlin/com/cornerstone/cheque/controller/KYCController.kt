@@ -1,12 +1,12 @@
 package com.cornerstone.cheque.controller
 
-import com.cornerstone.cheque.model.KYC
-import com.cornerstone.cheque.service.KYCService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import com.cornerstone.cheque.model.KYC
+import com.cornerstone.cheque.service.KYCService
 
 @RestController
-@RequestMapping("/api/kycs")
+@RequestMapping("/api/kyc")
 class KYCController(private val service: KYCService) {
 
     @PostMapping
@@ -16,7 +16,7 @@ class KYCController(private val service: KYCService) {
     @GetMapping
     fun getAll(): ResponseEntity<List<KYC>> =
         ResponseEntity.ok(service.getAll())
-
+        
     @GetMapping("/{id}")
     fun getById(@PathVariable id: Long): ResponseEntity<KYC> {
         val result = service.getById(id)
