@@ -9,9 +9,15 @@ import com.cornerstone.cheque.service.KYCService
 @RequestMapping("/api/kyc")
 class KYCController(private val service: KYCService) {
 
-    @PostMapping
-    fun create(@RequestBody entity: KYC): ResponseEntity<KYC> =
-        ResponseEntity.ok(service.create(entity))
+    @PostMapping("/{userId}")
+    fun create(@RequestBody request: KYCRequest,
+               @PathVariable userId: Long) {
+        service.create(
+            userId = userId,
+            name = request.name,
+            phone = request.phone,
+        )
+    }
 
     @GetMapping
     fun getAll(): ResponseEntity<List<KYC>> =
@@ -23,4 +29,8 @@ class KYCController(private val service: KYCService) {
         return if (result != null) ResponseEntity.ok(result)
         else ResponseEntity.notFound().build()
     }
+    data class KYCRequest (
+        val name: String,
+        val phone: String?
+    )
 }
