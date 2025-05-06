@@ -1,7 +1,7 @@
-package com.example.cheque.controller
+package com.cornerstone.cheque.controller
 
-import com.example.cheque.model.KYC
-import com.example.cheque.service.KYCService
+import com.cornerstone.cheque.model.KYC
+import com.cornerstone.cheque.service.KYCService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 

@@ -1,4 +1,4 @@
-package com.example.cheque.model
+package com.cornerstone.cheque.model
 
 import jakarta.persistence.*
 

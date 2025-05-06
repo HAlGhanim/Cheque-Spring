@@ -1,9 +1,9 @@
-package com.example.cheque.controller
+package com.cornerstone.cheque.controller
 
-import com.example.cheque.model.Account
-import com.example.cheque.model.AccountRequest
-import com.example.cheque.service.AccountService
-import com.example.cheque.service.UserService
+import com.cornerstone.cheque.model.Account
+import com.cornerstone.cheque.model.AccountRequest
+import com.cornerstone.cheque.service.AccountService
+import com.cornerstone.cheque.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 

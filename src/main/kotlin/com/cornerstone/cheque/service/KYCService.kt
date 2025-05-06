@@ -1,6 +1,6 @@
-package com.example.cheque.service
+package com.cornerstone.cheque.service
 
-import com.example.cheque.model.KYC
+import com.cornerstone.cheque.model.KYC
 import com.example.cheque.repository.KYCRepository
 import org.springframework.stereotype.Service
 

@@ -1,11 +1,10 @@
-package com.example.cheque.controller
+package com.cornerstone.cheque.controller
 
-import com.example.cheque.model.User
+import com.cornerstone.cheque.model.User
 import com.example.cheque.repository.UserRepository
-import com.example.cheque.service.UserService
+import com.cornerstone.cheque.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
 
 
