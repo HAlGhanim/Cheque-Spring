@@ -1,7 +1,7 @@
 package com.cornerstone.cheque.service
 
 import com.cornerstone.cheque.model.KYC
-import com.example.cheque.repository.KYCRepository
+import com.cornerstone.cheque.repo.KYCRepository
 import org.springframework.stereotype.Service
 
 @Service

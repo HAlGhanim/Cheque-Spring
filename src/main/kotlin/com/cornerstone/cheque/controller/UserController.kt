@@ -1,7 +1,7 @@
 package com.cornerstone.cheque.controller
 
 import com.cornerstone.cheque.model.User
-import com.example.cheque.repository.UserRepository
+import com.cornerstone.cheque.repo.UserRepository
 import com.cornerstone.cheque.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

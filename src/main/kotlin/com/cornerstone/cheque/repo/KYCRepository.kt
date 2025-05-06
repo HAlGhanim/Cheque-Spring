@@ -1,4 +1,4 @@
-package com.example.cheque.repository
+package com.cornerstone.cheque.repo
 
 import com.cornerstone.cheque.model.KYC
 import org.springframework.data.jpa.repository.JpaRepository

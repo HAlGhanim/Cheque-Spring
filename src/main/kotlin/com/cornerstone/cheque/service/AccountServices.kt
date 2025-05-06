@@ -1,7 +1,7 @@
 package com.cornerstone.cheque.service
 
 import com.cornerstone.cheque.model.Account
-import com.example.cheque.repository.AccountRepository
+import com.cornerstone.cheque.repo.AccountRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
