@@ -22,6 +22,7 @@ class KYCService(private val repository: KYCRepository, private val userReposito
 
     fun getAll(): List<KYC> = repository.findAll()
     fun getById (id: Long): KYC = repository.findById(id).orElse(null)
+    fun getByUserId(userId: Long): KYC? = repository.findByUserId(userId)
 }
 data class Kyc(
     val id: Long,
