@@ -27,12 +27,12 @@ class AccountController(private val service: AccountService,
         )
         return ResponseEntity.ok(service.create(account))
     }
-    @GetMapping("/getAll")
-    fun getAll(): ResponseEntity<List<Account>> =
+    @GetMapping
+    fun getAll(): ResponseEntity<List<AccountRequest>> =
         ResponseEntity.ok(service.getAll())
 
-    @GetMapping("/<built-in function id>")
-    fun getById(@PathVariable id: Long): ResponseEntity<Account> {
+    @GetMapping("/{id}")
+    fun getById(@PathVariable id: Long): ResponseEntity<AccountRequest> {
         val result = service.getById(id)
         return if (result != null) ResponseEntity.ok(result)
         else ResponseEntity.notFound().build()
