@@ -3,7 +3,7 @@ package com.cornerstone.cheque.model
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "kyc")
+@Table(name = "kycs")
 data class KYC(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
