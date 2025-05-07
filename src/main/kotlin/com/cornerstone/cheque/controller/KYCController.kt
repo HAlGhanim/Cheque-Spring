@@ -29,6 +29,12 @@ class KYCController(private val service: KYCService) {
         return if (result != null) ResponseEntity.ok(result)
         else ResponseEntity.notFound().build()
     }
+    @GetMapping("/user/{userId}")
+    fun getByUserId(@PathVariable userId: Long): ResponseEntity<KYC> {
+        val result = service.getByUserId(userId)
+        return if (result != null) ResponseEntity.ok(result)
+        else ResponseEntity.notFound().build()
+    }
     data class KYCRequest (
         val name: String,
         val phone: String?

@@ -10,9 +10,11 @@ data class Transaction(
     val id: Long = 0,
 
     @ManyToOne
+    @JoinColumn(name = "sender_account_id", referencedColumnName = "account_number")
     val senderAccount: Account,
 
     @ManyToOne
+    @JoinColumn(name = "receiver_account_id", referencedColumnName = "account_number")
     val receiverAccount: Account,
 
     val amount: Double,
@@ -24,3 +26,4 @@ data class TransactionRequest(
     val receiverAccount: String,
     val amount: Double
 )
+

@@ -31,10 +31,11 @@ class AccountController(private val service: AccountService,
     fun getAll(): ResponseEntity<List<AccountRequest>> =
         ResponseEntity.ok(service.getAll())
 
-    @GetMapping("/{id}")
-    fun getById(@PathVariable id: Long): ResponseEntity<AccountRequest> {
-        val result = service.getById(id)
+    @GetMapping("/{accountNumber}")
+    fun getByAccountNumber(@PathVariable accountNumber: String): ResponseEntity<AccountRequest> {
+        val result = service.getByAccountNumber(accountNumber)
         return if (result != null) ResponseEntity.ok(result)
         else ResponseEntity.notFound().build()
     }
+
 }

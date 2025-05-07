@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 class AuthenticationController(
     private val authenticationManager: AuthenticationManager,
     private val userDetailsService: UserDetailsService,

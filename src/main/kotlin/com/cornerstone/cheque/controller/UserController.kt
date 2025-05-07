@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.*
 
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 class UserController(private val service: UserService,
                      private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder
 ) {
 
-    @PostMapping
+    @PostMapping("/auth/register")
     fun create(@RequestBody entity: User): ResponseEntity<out Any?> {
         if (userRepository.findByEmail(entity.email) != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already exists.")
@@ -27,11 +27,11 @@ class UserController(private val service: UserService,
         return ResponseEntity.ok(service.create(newUser))
 
     }
-    @GetMapping
+    @GetMapping("/users")
     fun getAll(): ResponseEntity<List<User>> =
         ResponseEntity.ok(service.getAll())
 
-    @GetMapping("/{id}")
+    @GetMapping("/users/{id}")
     fun getById(@PathVariable id: Long): ResponseEntity<User> {
         val result = service.getById(id)
         return if (result != null) ResponseEntity.ok(result)
