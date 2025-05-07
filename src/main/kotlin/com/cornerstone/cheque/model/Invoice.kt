@@ -2,6 +2,7 @@ package com.cornerstone.cheque.model
 
 import jakarta.persistence.*
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Entity
@@ -24,11 +25,11 @@ data class Invoice(
 
     @ManyToOne
     @JoinColumn(name = "transaction_id")
-    val transaction: Transaction? = null,
+    val transaction: Transaction,
 
     @Column(nullable = false)
     val description: String,
 
     @Column(nullable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now()
+    val createdAt: LocalDate = LocalDate.now()
 )

@@ -1,6 +1,7 @@
 package com.cornerstone.cheque.model
 
 import jakarta.persistence.*
+import java.math.BigDecimal
 import java.time.LocalDate
 
 @Entity
@@ -14,7 +15,7 @@ data class Account(
     @JoinColumn(name = "user_id", nullable = false)
     val user: User?,
 
-    var balance: Double,
+    var balance: BigDecimal,
 
     @Column(name = "spending_limit")
     val spendingLimit: Int?,
@@ -36,7 +37,7 @@ enum class AccountType {
 data class AccountRequest(
     val accountNumber: String,
     val userId: Long,
-    var balance: Double,
+    var balance: BigDecimal,
     val spendingLimit: Int?,
     val currency: String,
     val accountType: AccountType,

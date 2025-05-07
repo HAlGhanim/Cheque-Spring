@@ -16,7 +16,7 @@ data class PaymentLink(
 
     @ManyToOne
     @JoinColumn(name = "transaction_id")
-    val transaction: Transaction? = null,
+    var transaction: Transaction? = null,
 
     @Column(nullable = false)
     val amount: BigDecimal,
@@ -25,5 +25,16 @@ data class PaymentLink(
     val description: String,
 
     @Column(nullable = false)
-    val status: String
+    var status: String
 )
+
+data class PaymentLinkRequest(
+    val accountNumber: String,
+    val amount: BigDecimal,
+    val description: String
+)
+
+data class PaymentLinkUseRequest(
+    val recipientAccountNumber: String
+)
+

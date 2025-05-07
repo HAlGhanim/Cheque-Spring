@@ -4,6 +4,7 @@ import com.cornerstone.cheque.model.Transaction
 import com.cornerstone.cheque.repo.TransactionRepository
 import com.cornerstone.cheque.repo.AccountRepository
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.time.LocalDate
 
 @Service
@@ -44,7 +45,7 @@ data class TransactionResponse(
     val id: Long,
     val senderAccountNumber: String,
     val receiverAccountNumber: String,
-    val amount: Double,
+    val amount: BigDecimal,
     val createdAt: LocalDate
 )
 

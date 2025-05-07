@@ -32,7 +32,7 @@ class TransactionController(
             // Validate spending limit only for CUSTOMER account type
             if (sender.accountType == AccountType.CUSTOMER) {
                 val spendingLimit = sender.spendingLimit
-                if (spendingLimit == null || request.amount > spendingLimit.toDouble()) {
+                if (spendingLimit == null || request.amount > spendingLimit.toBigDecimal()) {
                     return ResponseEntity.badRequest().body(mapOf("error" to "Exceeded the spending limit"))
                 }
             }
