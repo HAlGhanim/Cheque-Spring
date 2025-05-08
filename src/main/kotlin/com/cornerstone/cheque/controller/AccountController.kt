@@ -1,41 +1,26 @@
 package com.cornerstone.cheque.controller
 
-import com.cornerstone.cheque.model.Account
 import com.cornerstone.cheque.model.AccountRequest
 import com.cornerstone.cheque.model.AccountResponse
 import com.cornerstone.cheque.repo.AccountRepository
 import com.cornerstone.cheque.service.AccountService
-import com.cornerstone.cheque.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime
+import java.security.Principal
 
 @RestController
 @RequestMapping("/api/accounts")
-class AccountController(private val service: AccountService,
-                        private val repository: UserService,
-                        private val accountrepo: AccountRepository) {
+class AccountController(
+    private val service: AccountService,
+) {
 
-    @PostMapping("/create")
-    fun createAccount(@RequestBody request: AccountRequest): ResponseEntity<out Any?> {
-        val user = repository.getById(request.userId)
-
-        if (accountrepo.existsByUser(user)) {
-            return ResponseEntity
-                .badRequest()
-                .body(mapOf("error" to "User already has an account"))
-        }
-        val account = Account(
-            accountNumber = service.generateUniqueAccountNumber(accountrepo),
-            user = user,
-            balance = request.balance,
-            spendingLimit = request.spendingLimit,
-            currency = request.currency,
-            accountType = request.accountType,
-            createdAt = LocalDateTime.now()
-        )
-        return ResponseEntity.ok(service.create(account))
+    @PostMapping
+    fun createAccount(@RequestBody request: AccountRequest, principal: Principal): ResponseEntity<out Any?> {
+        val userId = principal.name.toLong()
+        val account = service.create(userId, request)
+        return ResponseEntity.ok(account)
     }
+
     @GetMapping
     fun getAll(): ResponseEntity<List<AccountResponse>> =
         ResponseEntity.ok(service.getAll())
@@ -45,6 +30,13 @@ class AccountController(private val service: AccountService,
         val result = service.getByAccountNumber(accountNumber)
         return if (result != null) ResponseEntity.ok(result)
         else ResponseEntity.notFound().build()
+    }
+
+    @GetMapping("/my")
+    fun getMyAccounts(principal: Principal): ResponseEntity<List<AccountResponse>> {
+        val userId = principal.name.toLong()
+        val accounts = service.getByUserId(userId)
+        return ResponseEntity.ok(accounts)
     }
 
 }
