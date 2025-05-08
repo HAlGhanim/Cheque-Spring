@@ -30,6 +30,6 @@ data class Invoice(
     @Column(nullable = false)
     val description: String,
 
-    @Column(nullable = false)
+    @JoinColumn(name = "created_at", nullable = false)
     val createdAt: LocalDateTime = LocalDateTime.now()
 )

@@ -51,4 +51,11 @@ class AccountController(private val service: AccountService,
         else ResponseEntity.notFound().build()
     }
 
+    @GetMapping("/my")
+    fun getMyAccounts(principal: Principal): ResponseEntity<List<AccountResponse>> {
+        val userId = principal.name.toLong()
+        val accounts = service.getByUserId(userId)
+        return ResponseEntity.ok(accounts)
+    }
+
 }

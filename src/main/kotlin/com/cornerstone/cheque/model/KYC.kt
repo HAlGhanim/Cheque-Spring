@@ -16,11 +16,6 @@ data class KYC(
     var phone: String? = null
 )
 data class KYCRequest(
-    val userId: Long,
-    val name: String,
-    val phone: String?
-)
-data class KYCResponse (
     val name: String,
     val phone: String?
 )
