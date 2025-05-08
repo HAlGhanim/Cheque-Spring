@@ -35,7 +35,6 @@ enum class AccountType {
     CUSTOMER, MERCHANT
 }
 data class AccountRequest(
-    val userId: Long,
     var balance: BigDecimal,
     val spendingLimit: Int?,
     val currency: String,

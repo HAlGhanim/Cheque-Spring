@@ -8,17 +8,21 @@ import com.cornerstone.cheque.service.AccountService
 import com.cornerstone.cheque.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
 import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/accounts")
 class AccountController(private val service: AccountService,
-                        private val repository: UserService,
+                        private val userService: UserService,
                         private val accountrepo: AccountRepository) {
 
     @PostMapping("/create")
-    fun createAccount(@RequestBody request: AccountRequest): ResponseEntity<out Any?> {
-        val user = repository.getById(request.userId)
+    fun createAccount(
+        @RequestBody request: AccountRequest,
+        principal: Principal
+    ): ResponseEntity<out Any?> {
+        val user = userService.findByUsername(principal.name)
 
         if (accountrepo.existsByUser(user)) {
             return ResponseEntity
