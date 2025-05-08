@@ -31,5 +31,5 @@ data class Invoice(
     val description: String,
 
     @Column(nullable = false)
-    val createdAt: LocalDate = LocalDate.now()
+    val createdAt: LocalDateTime = LocalDateTime.now()
 )

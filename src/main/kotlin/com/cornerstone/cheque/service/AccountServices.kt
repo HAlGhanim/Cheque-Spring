@@ -1,7 +1,7 @@
 package com.cornerstone.cheque.service
 
 import com.cornerstone.cheque.model.Account
-import com.cornerstone.cheque.model.AccountRequest
+import com.cornerstone.cheque.model.AccountResponse
 import com.cornerstone.cheque.model.AccountType
 import com.cornerstone.cheque.repo.AccountRepository
 import org.springframework.stereotype.Service
@@ -27,10 +27,10 @@ class AccountService(
         return repository.save(account)
     }
 
-    fun getById(id: Long): AccountRequest? {
+    fun getById(id: Long): AccountResponse? {
         val account = repository.findById(id).orElse(null) ?: return null
 
-        return AccountRequest(
+        return AccountResponse(
             accountNumber = account.accountNumber,
             userId = account.user?.id ?: 0,
             balance = account.balance,
@@ -41,10 +41,10 @@ class AccountService(
         )
     }
 
-    fun getByAccountNumber(accountNumber: String): AccountRequest? {
+    fun getByAccountNumber(accountNumber: String): AccountResponse? {
         val account = repository.findByAccountNumber(accountNumber) ?: return null
 
-        return AccountRequest(
+        return AccountResponse(
             accountNumber = account.accountNumber,
             userId = account.user?.id ?: 0,
             balance = account.balance,
@@ -54,18 +54,24 @@ class AccountService(
             createdAt = account.createdAt
         )
     }
-
-    fun getAll(): List<AccountRequest> {
+    fun getAll(): List<AccountResponse> {
         return repository.findAll().map {
-            AccountRequest(
+            AccountResponse(
                 accountNumber = it.accountNumber,
                 userId = it.user?.id ?: 0,
                 balance = it.balance,
                 spendingLimit = it.spendingLimit,
                 currency = it.currency,
                 accountType = it.accountType,
-                createdAt = it.createdAt
+                 createdAt = it.createdAt
             )
         }
+    }
+    fun generateUniqueAccountNumber(accountRepository: AccountRepository): String {
+        var accountNumber: String
+        do {
+            accountNumber = (1000000000L..9999999999L).random().toString() // 10 digits
+        } while (accountRepository.existsByAccountNumber(accountNumber))
+        return accountNumber
     }
 }

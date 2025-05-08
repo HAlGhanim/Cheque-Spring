@@ -7,7 +7,7 @@ import com.cornerstone.cheque.repo.TransactionRepository
 import com.cornerstone.cheque.repo.UserRepository
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 class InvoiceService(
@@ -46,7 +46,7 @@ class InvoiceService(
             senderAccount = senderAccount,
             receiverAccount = receiverAccount,
             amount = request.amount,
-            createdAt = LocalDate.now()
+            createdAt = LocalDateTime.now()
         )
         val savedTransaction = transactionRepository.save(transaction)
 
@@ -56,7 +56,7 @@ class InvoiceService(
             amount = request.amount,
             transaction = savedTransaction,
             description = request.description,
-            createdAt = LocalDate.now()
+            createdAt = LocalDateTime.now()
         )
         val savedInvoice = invoiceRepository.save(invoice)
 
@@ -119,5 +119,5 @@ data class InvoiceResponse(
     val amount: BigDecimal,
     val transactionId: Long,
     val description: String,
-    val createdAt: LocalDate
+    val createdAt: LocalDateTime
 )

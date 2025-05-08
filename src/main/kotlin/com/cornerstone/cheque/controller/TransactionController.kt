@@ -3,19 +3,18 @@ package com.cornerstone.cheque.controller
 import com.cornerstone.cheque.model.Transaction
 import com.cornerstone.cheque.model.TransactionRequest
 import com.cornerstone.cheque.repo.AccountRepository
-import com.cornerstone.cheque.service.TransactionResponse
 import com.cornerstone.cheque.service.TransactionService
 import com.cornerstone.cheque.model.AccountType
+import com.cornerstone.cheque.model.TransactionResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/transactions")
 class TransactionController(
     private val service: TransactionService,
-    private val accountRepository: AccountRepository
-) {
+    private val accountRepository: AccountRepository) {
 
     @PostMapping
     fun create(@RequestBody request: TransactionRequest): ResponseEntity<Any> {
@@ -29,7 +28,6 @@ class TransactionController(
             if (sender.balance < request.amount)
                 return ResponseEntity.badRequest().body(mapOf("error" to "Insufficient balance"))
 
-            // Validate spending limit only for CUSTOMER account type
             if (sender.accountType == AccountType.CUSTOMER) {
                 val spendingLimit = sender.spendingLimit
                 if (spendingLimit == null || request.amount > spendingLimit.toBigDecimal()) {
@@ -44,23 +42,23 @@ class TransactionController(
             accountRepository.save(sender)
             accountRepository.save(receiver)
 
-            // Create transaction
             val transaction = Transaction(
                 senderAccount = sender,
                 receiverAccount = receiver,
                 amount = request.amount,
-                createdAt = LocalDate.now()
+                createdAt = LocalDateTime.now()
             )
-
             val savedTransaction = service.create(transaction)
 
-            val response = TransactionRequest(
-                senderAccount = savedTransaction.senderAccount.accountNumber,
-                receiverAccount = savedTransaction.receiverAccount.accountNumber,
-                amount = savedTransaction.amount
+            val response = TransactionResponse(
+                id = savedTransaction.id,
+                senderAccountNumber = savedTransaction.senderAccount.accountNumber,
+                receiverAccountNumber = savedTransaction.receiverAccount.accountNumber,
+                amount = savedTransaction.amount,
+                createdAt = savedTransaction.createdAt
             )
 
-            ResponseEntity.ok(response)
+            return ResponseEntity.ok(response)
 
         } catch (ex: Exception) {
             ex.printStackTrace()
@@ -83,12 +81,12 @@ class TransactionController(
         return ResponseEntity.ok(result)
     }
 
-    @GetMapping("/{id}")
-    fun getById(@PathVariable id: Long): ResponseEntity<Transaction> {
-        val result = service.getById(id)
-        return if (result != null) ResponseEntity.ok(result)
-        else ResponseEntity.notFound().build()
-    }
+//    @GetMapping("/{id}")
+//    fun getById(@PathVariable id: Long): ResponseEntity<Transaction> {
+//        val result = service.getById(id)
+//        return if (result != null) ResponseEntity.ok(result)
+//        else ResponseEntity.notFound().build()
+//    }
 
     @GetMapping("/account/{accountNumber}")
     fun getByAccountNumber(@PathVariable accountNumber: String): ResponseEntity<List<TransactionResponse>> {

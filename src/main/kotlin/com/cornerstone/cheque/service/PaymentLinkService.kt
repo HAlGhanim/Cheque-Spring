@@ -9,7 +9,7 @@ import com.cornerstone.cheque.repo.AccountRepository
 import com.cornerstone.cheque.repo.PaymentLinkRepository
 import com.cornerstone.cheque.repo.TransactionRepository
 import org.springframework.stereotype.Service
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 class PaymentLinkService(
@@ -80,7 +80,7 @@ class PaymentLinkService(
             senderAccount = senderAccount,
             receiverAccount = recipientAccount,
             amount = paymentLink.amount,
-            createdAt = LocalDate.now()
+            createdAt = LocalDateTime.now()
         )
         val savedTransaction = transactionRepository.save(transaction)
 

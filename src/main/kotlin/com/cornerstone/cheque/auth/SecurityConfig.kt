@@ -27,7 +27,7 @@ class SecurityConfig(
         return http.csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers("/api/auth/**", "/api-docs", "/hello").permitAll()
-                    .anyRequest().authenticated()
+                    .anyRequest().permitAll()
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
