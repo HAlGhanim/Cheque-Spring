@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface AccountRepository : JpaRepository<Account, Long> {
+    fun findByUser(user: User): Account?
     fun findByAccountNumber(accountNumber: String): Account?
     fun existsByAccountNumber(accountNumber: String): Boolean
 }

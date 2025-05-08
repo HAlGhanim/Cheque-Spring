@@ -16,7 +16,7 @@ class CustomUserDetailsService(
             ?: throw UsernameNotFoundException("User not found")
 
         return User.builder()
-            .username(user.id.toString())
+            .username(user.email)
             .password(user.password)
             .roles(user.role.name)
             .build()

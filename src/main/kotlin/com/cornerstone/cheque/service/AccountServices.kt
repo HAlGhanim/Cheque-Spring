@@ -17,6 +17,10 @@ class AccountService(
     fun create(userId: Long, request: AccountRequest): AccountResponse {
         val user = userRepository.findById(userId).orElseThrow { RuntimeException("User not found") }
 
+        if (repository.findByUser(user) != null) {
+            throw Exception("User already has an account...")
+        }
+
         when (request.accountType) {
             AccountType.CUSTOMER -> require(request.spendingLimit != null && request.spendingLimit > 0) {
                 "Customer accounts must have a spending limit greater than 0"
@@ -59,7 +63,7 @@ class AccountService(
         return repository.findAll().map { toResponse(it) }
     }
 
-    private fun generateUniqueAccountNumber(): String {
+     fun generateUniqueAccountNumber(): String {
         var accountNumber: String
         do {
             accountNumber = (1000000000L..9999999999L).random().toString()

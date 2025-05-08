@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/accounts")
-class AccountController(private val service: AccountService,
+class AccountController(private val accountService: AccountService,
                         private val userService: UserService,
                         private val accountrepo: AccountRepository) {
 
@@ -23,30 +23,16 @@ class AccountController(private val service: AccountService,
         principal: Principal
     ): ResponseEntity<out Any?> {
         val user = userService.findByUsername(principal.name)
-
-        if (accountrepo.existsByUser(user)) {
-            return ResponseEntity
-                .badRequest()
-                .body(mapOf("error" to "User already has an account"))
-        }
-        val account = Account(
-            accountNumber = service.generateUniqueAccountNumber(accountrepo),
-            user = user,
-            balance = request.balance,
-            spendingLimit = request.spendingLimit,
-            currency = request.currency,
-            accountType = request.accountType,
-            createdAt = LocalDateTime.now()
-        )
-        return ResponseEntity.ok(service.create(account))
+        val userId = user.id ?: throw IllegalStateException("Unexpected user has no id...")
+        return ResponseEntity.ok(accountService.create(userId, request))
     }
     @GetMapping
     fun getAll(): ResponseEntity<List<AccountResponse>> =
-        ResponseEntity.ok(service.getAll())
+        ResponseEntity.ok(accountService.getAll())
 
     @GetMapping("/{accountNumber}")
     fun getByAccountNumber(@PathVariable accountNumber: String): ResponseEntity<AccountResponse> {
-        val result = service.getByAccountNumber(accountNumber)
+        val result = accountService.getByAccountNumber(accountNumber)
         return if (result != null) ResponseEntity.ok(result)
         else ResponseEntity.notFound().build()
     }
@@ -54,7 +40,7 @@ class AccountController(private val service: AccountService,
     @GetMapping("/my")
     fun getMyAccounts(principal: Principal): ResponseEntity<List<AccountResponse>> {
         val userId = principal.name.toLong()
-        val accounts = service.getByUserId(userId)
+        val accounts = accountService.getByUserId(userId)
         return ResponseEntity.ok(accounts)
     }
 

@@ -24,7 +24,7 @@ class AuthenticationController(
             val user = userRepository.findByEmail(request.email)
                 ?: throw UsernameNotFoundException("User not found")
 
-            val token = jwtService.generateToken(user.id!!)
+            val token = jwtService.generateToken(request.email)
             return ResponseEntity.ok(AuthResponse(token))
         } else {
             throw UsernameNotFoundException("Invalid credentials")
