@@ -17,5 +17,9 @@ data class Transaction(
     val receiverAccount: Account? = null,
 
     var amount: Double = 0.0,
+    // for the multicurrency
+    var currency: String = "KWD",
+    var convertedAmount: Double = 0.0,
+
     var createdAt: LocalDateTime? = null
 )
