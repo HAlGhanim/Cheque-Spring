@@ -67,7 +67,7 @@ class TransactionController(
     }
 
 
-    @GetMapping
+    @GetMapping("getAll")
     fun getAll(): ResponseEntity<List<TransactionResponse>> {
         val result = service.getAll().map {
             TransactionResponse(

@@ -26,7 +26,7 @@ class AccountController(private val accountService: AccountService,
         val userId = user.id ?: throw IllegalStateException("Unexpected user has no id...")
         return ResponseEntity.ok(accountService.create(userId, request))
     }
-    @GetMapping
+    @GetMapping("/getAll")
     fun getAll(): ResponseEntity<List<AccountResponse>> =
         ResponseEntity.ok(accountService.getAll())
 

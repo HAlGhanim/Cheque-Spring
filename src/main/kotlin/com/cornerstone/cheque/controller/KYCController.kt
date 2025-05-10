@@ -36,7 +36,7 @@ class KYCController(
         }
     }
 
-    @GetMapping
+    @GetMapping("getAll")
     fun getAll(): ResponseEntity<List<KYC>> =
         ResponseEntity.ok(service.getAll())
 

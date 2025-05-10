@@ -104,6 +104,10 @@ data class InvoiceRequest(
     val description: String
 )
 
+enum class InvoiceType {
+    LINK, TRANSACTION
+}
+
 data class InvoiceResponse(
     val id: Long,
     val fromUserId: Long,

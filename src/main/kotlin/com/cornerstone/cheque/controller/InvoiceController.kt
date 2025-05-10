@@ -27,7 +27,7 @@ class InvoiceController(private val invoiceService: InvoiceService) {
     fun getInvoiceById(@PathVariable id: Long): ResponseEntity<InvoiceResponse> =
         invoiceService.getById(id)?.let { ResponseEntity.ok(it) } ?: ResponseEntity.notFound().build()
 
-    @GetMapping
+    @GetMapping("/getAll")
     fun getAllInvoices(): ResponseEntity<List<InvoiceResponse>> =
         ResponseEntity.ok(invoiceService.getAll())
 

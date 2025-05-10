@@ -13,7 +13,7 @@ class PaymentLinkController(
     private val service: PaymentLinkService
 ) {
 
-    @GetMapping
+    @GetMapping("/getAll")
     fun getAll() = ResponseEntity.ok(service.getAll().map { service.toResponse(it) })
 
     @GetMapping("/{id}")
