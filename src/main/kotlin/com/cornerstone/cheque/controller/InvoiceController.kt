@@ -12,14 +12,14 @@ import java.security.Principal
 class InvoiceController(private val invoiceService: InvoiceService) {
 
     @PostMapping
-    fun create(@RequestBody request: InvoiceRequest, principal: Principal): ResponseEntity<InvoiceResponse> {
+    fun create(@RequestBody request: InvoiceRequest, principal: Principal): ResponseEntity<Any> {
         return try {
             val response = invoiceService.create(request, principal.name)
             ResponseEntity.ok(response)
         } catch (e: IllegalArgumentException) {
-            ResponseEntity.badRequest().build()
+            ResponseEntity.badRequest().body(mapOf("error" to e.message))
         } catch (e: Exception) {
-            ResponseEntity.internalServerError().build()
+            ResponseEntity.internalServerError().body(mapOf("error" to e.message))
         }
     }
 

@@ -16,18 +16,26 @@ class InvoiceService(
 ) {
 
     fun create(request: InvoiceRequest, userId: String): InvoiceResponse {
-        val fromUserId = userId.toLong()
-        val fromUser = userRepository.findById(fromUserId).orElseThrow { IllegalArgumentException("From user not found") }
-
-        val toUser = userRepository.findById(request.toUserId).orElseThrow {
-            IllegalArgumentException("To user not found")
-        }
+        val fromUser = userRepository.findByEmail(userId)
+            ?: throw IllegalArgumentException("From user not found")
 
         val senderAccount = accountRepository.findByAccountNumber(request.senderAccount)
             ?: throw IllegalArgumentException("Sender account not found")
 
+        if (senderAccount.user?.id != fromUser.id) {
+            throw IllegalArgumentException("You do not own the sender account")
+        }
+
         val receiverAccount = accountRepository.findByAccountNumber(request.receiverAccount)
             ?: throw IllegalArgumentException("Receiver account not found")
+
+        val toUser = receiverAccount.user
+            ?: throw IllegalArgumentException("Receiver account is not linked to any user")
+
+        if (request.senderAccount == request.receiverAccount) {
+            throw IllegalArgumentException("Sender and receiver accounts must be different")
+        }
+
 
         val transaction = Transaction(
             senderAccount = senderAccount,
@@ -59,7 +67,6 @@ class InvoiceService(
     fun getByUserId(userId: Long): List<InvoiceResponse> =
         invoiceRepository.findByFromUserIdOrToUserId(userId, userId).map { toResponse(it) }
 
-    // ✅ /my endpoint (Principal.id → Long → findById)
     fun getMyInvoices(userIdAsString: String): List<InvoiceResponse> {
         val userId = userIdAsString.toLong()
         val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("User not found") }
@@ -91,7 +98,6 @@ class InvoiceService(
 }
 
 data class InvoiceRequest(
-    val toUserId: Long,
     val senderAccount: String,
     val receiverAccount: String,
     val amount: BigDecimal,
