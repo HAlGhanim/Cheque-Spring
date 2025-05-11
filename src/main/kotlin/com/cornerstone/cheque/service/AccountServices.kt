@@ -49,9 +49,11 @@ class AccountService(
         return repository.findById(id).orElse(null)?.let { toResponse(it) }
     }
 
-    fun getByUserId(userId: Long): List<AccountResponse> {
+    fun getByUserId(email: String): List<AccountResponse> {
+        val user = userRepository.findByEmail(email)
+            ?: throw IllegalArgumentException("User not found")
         return repository.findAll()
-            .filter { it.user?.id == userId }
+            .filter { it.user?.id == user.id }
             .map { toResponse(it) }
     }
 

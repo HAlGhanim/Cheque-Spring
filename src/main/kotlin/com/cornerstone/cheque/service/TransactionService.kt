@@ -27,18 +27,28 @@ class TransactionService(
         val account = accountRepository.findByAccountNumber(accountNumber)
             ?: throw IllegalArgumentException("Account not found")
 
-        return repository.findAll().filter {
-            it.senderAccount.accountNumber == account.accountNumber || it.receiverAccount.accountNumber == account.accountNumber
-        }.map {
-            TransactionResponse(
-                id = it.id,
-                senderAccountNumber = it.senderAccount.accountNumber,
-                receiverAccountNumber = it.receiverAccount.accountNumber,
-                amount = it.amount,
-                createdAt = it.createdAt
-            )
-        }
+        return repository.findAll()
+            .filter {
+                (it.senderAccount?.accountNumber == account.accountNumber) ||
+                        (it.receiverAccount?.accountNumber == account.accountNumber)
+            }
+            .mapNotNull {
+                val sender = it.senderAccount
+                val receiver = it.receiverAccount
+                if (sender != null && receiver != null) {
+                    TransactionResponse(
+                        id = it.id,
+                        senderAccountNumber = sender.accountNumber,
+                        receiverAccountNumber = receiver.accountNumber,
+                        amount = it.amount,
+                        createdAt = it.createdAt
+                    )
+                } else {
+                    null
+                }
+            }
     }
+
 
 }
 

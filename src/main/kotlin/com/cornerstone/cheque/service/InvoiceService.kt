@@ -67,10 +67,9 @@ class InvoiceService(
     fun getByUserId(userId: Long): List<InvoiceResponse> =
         invoiceRepository.findByFromUserIdOrToUserId(userId, userId).map { toResponse(it) }
 
-    fun getMyInvoices(userIdAsString: String): List<InvoiceResponse> {
-        val userId = userIdAsString.toLong()
-        val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("User not found") }
-
+    fun getMyInvoices(userEmail: String): List<InvoiceResponse> {
+        val user = userRepository.findByEmail(userEmail)
+            ?: throw IllegalArgumentException("User not found")
         return invoiceRepository.findByFromUserIdOrToUserId(user.id!!, user.id!!)
             .map { toResponse(it) }
     }

@@ -7,69 +7,64 @@ import com.cornerstone.cheque.service.TransactionService
 import com.cornerstone.cheque.model.AccountType
 import com.cornerstone.cheque.model.TransactionResponse
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 
+@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/transactions")
 class TransactionController(
     private val service: TransactionService,
-    private val accountRepository: AccountRepository) {
-
+    private val accountRepository: AccountRepository
+) {
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping
-    fun create(@RequestBody request: TransactionRequest): ResponseEntity<Any> {
-        return try {
-            val sender = accountRepository.findByAccountNumber(request.senderAccount)
-                ?: return ResponseEntity.badRequest().body(mapOf("error" to "Sender account not found"))
+    fun create(@RequestBody request: TransactionRequest): ResponseEntity<TransactionResponse> {
+        val sender = accountRepository.findByAccountNumber(request.senderAccount)
+            ?: throw IllegalArgumentException("Sender account not found")
 
-            val receiver = accountRepository.findByAccountNumber(request.receiverAccount)
-                ?: return ResponseEntity.badRequest().body(mapOf("error" to "Receiver account not found"))
+        val receiver = accountRepository.findByAccountNumber(request.receiverAccount)
+            ?: throw IllegalArgumentException("Receiver account not found")
 
-            if (sender.balance < request.amount)
-                return ResponseEntity.badRequest().body(mapOf("error" to "Insufficient balance"))
+        if (sender.balance < request.amount)
+            throw IllegalArgumentException("Insufficient balance")
 
-            if (sender.accountType == AccountType.CUSTOMER) {
-                val spendingLimit = sender.spendingLimit
-                if (spendingLimit == null || request.amount > spendingLimit.toBigDecimal()) {
-                    return ResponseEntity.badRequest().body(mapOf("error" to "Exceeded the spending limit"))
-                }
+        if (sender.accountType == AccountType.CUSTOMER) {
+            val spendingLimit = sender.spendingLimit
+            if (spendingLimit == null || request.amount > spendingLimit.toBigDecimal()) {
+                throw IllegalArgumentException("Exceeded the spending limit")
             }
-
-            // Update balances
-            sender.balance -= request.amount
-            receiver.balance += request.amount
-
-            accountRepository.save(sender)
-            accountRepository.save(receiver)
-
-            val transaction = Transaction(
-                senderAccount = sender,
-                receiverAccount = receiver,
-                amount = request.amount,
-                createdAt = LocalDateTime.now()
-            )
-            val savedTransaction = service.create(transaction)
-
-            val response = TransactionResponse(
-                id = savedTransaction.id,
-                senderAccountNumber = savedTransaction.senderAccount.accountNumber,
-                receiverAccountNumber = savedTransaction.receiverAccount.accountNumber,
-                amount = savedTransaction.amount,
-                createdAt = savedTransaction.createdAt
-            )
-
-            return ResponseEntity.ok(response)
-
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-            ResponseEntity.status(500).body(mapOf("error" to "Internal server error", "details" to ex.message))
         }
+
+        sender.balance -= request.amount
+        receiver.balance += request.amount
+
+        accountRepository.save(sender)
+        accountRepository.save(receiver)
+
+        val transaction = Transaction(
+            senderAccount = sender,
+            receiverAccount = receiver,
+            amount = request.amount,
+            createdAt = LocalDateTime.now()
+        )
+        val saved = service.create(transaction)
+
+        return ResponseEntity.ok(
+            TransactionResponse(
+                id = saved.id,
+                senderAccountNumber = sender.accountNumber,
+                receiverAccountNumber = receiver.accountNumber,
+                amount = saved.amount,
+                createdAt = saved.createdAt
+            )
+        )
     }
 
-
-    @GetMapping("getAll")
-    fun getAll(): ResponseEntity<List<TransactionResponse>> {
-        val result = service.getAll().map {
+    @GetMapping("/getAll")
+    fun getAll(): ResponseEntity<List<TransactionResponse>> =
+        ResponseEntity.ok(service.getAll().map {
             TransactionResponse(
                 id = it.id,
                 senderAccountNumber = it.senderAccount.accountNumber,
@@ -77,20 +72,9 @@ class TransactionController(
                 amount = it.amount,
                 createdAt = it.createdAt
             )
-        }
-        return ResponseEntity.ok(result)
-    }
-
-//    @GetMapping("/{id}")
-//    fun getById(@PathVariable id: Long): ResponseEntity<Transaction> {
-//        val result = service.getById(id)
-//        return if (result != null) ResponseEntity.ok(result)
-//        else ResponseEntity.notFound().build()
-//    }
+        })
 
     @GetMapping("/account/{accountNumber}")
-    fun getByAccountNumber(@PathVariable accountNumber: String): ResponseEntity<List<TransactionResponse>> {
-        val result = service.getByAccountNumber(accountNumber)
-        return ResponseEntity.ok(result)
-    }
+    fun getByAccountNumber(@PathVariable accountNumber: String): ResponseEntity<List<TransactionResponse>> =
+        ResponseEntity.ok(service.getByAccountNumber(accountNumber))
 }

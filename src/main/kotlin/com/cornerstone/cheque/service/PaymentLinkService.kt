@@ -18,6 +18,11 @@ class PaymentLinkService(
     private val transactionRepository: TransactionRepository
 ) {
 
+    fun getResponseById(id: Long): PaymentLinkResponse {
+        val link = paymentLinkRepository.findById(id).orElseThrow { IllegalArgumentException("Payment link not found") }
+        return toResponse(link)
+    }
+
     fun toResponse(paymentLink: PaymentLink): PaymentLinkResponse {
         return PaymentLinkResponse(
             id = paymentLink.id!!,

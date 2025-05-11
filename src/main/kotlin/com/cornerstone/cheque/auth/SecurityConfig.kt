@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -17,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
+@EnableMethodSecurity
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtAuthFilter: JwtAuthenticationFilter,
@@ -27,20 +29,6 @@ class SecurityConfig(
         return http.csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers("/api/auth/**").permitAll()
-                    .requestMatchers("/api/users").hasRole("ADMIN")
-                    .requestMatchers("/api/users/{id}").hasRole("ADMIN")
-                    .requestMatchers("/api/transactions").permitAll()
-                    .requestMatchers("/account/{accountNumber}").hasRole("ADMIN")
-                    .requestMatchers("/account/getAll").hasRole("ADMIN")
-                    .requestMatchers("/api/payment-links/getAll").hasRole("ADMIN")
-                    .requestMatchers("/api/kyc/getAll").hasRole("ADMIN")
-                    .requestMatchers("/api/invoices/user/{userId}").hasRole("ADMIN")
-                    .requestMatchers("/api/invoices/account/{accountNumber}").hasRole("ADMIN")
-                    .requestMatchers("/api/invoices/getAll").hasRole("ADMIN")
-                    .requestMatchers("/api/accounts/{accountNumber}").hasRole("ADMIN")
-                    .requestMatchers("/api/accounts/getAll").hasRole("ADMIN")
-
-
                     .anyRequest().authenticated()
             }
             .sessionManagement {
