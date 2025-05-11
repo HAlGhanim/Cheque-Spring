@@ -6,7 +6,7 @@ import com.cornerstone.cheque.model.User
 
 @Service
 class UserService(private val repository: UserRepository) {
-    fun findByUsername(username: String): User {
+    fun findByUsername(username: String): User? {
         return repository.findByEmail(username)
     }
 

@@ -26,11 +26,10 @@ class SecurityConfig(
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         return http.csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/auth/register").permitAll()
+                it.requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/api/users").hasRole("ADMIN")
                     .requestMatchers("/api/users/{id}").hasRole("ADMIN")
                     .requestMatchers("/api/transactions").permitAll()
-                    .requestMatchers("/api/auth/**").hasRole("ADMIN")
                     .requestMatchers("/account/{accountNumber}").hasRole("ADMIN")
                     .requestMatchers("/account/getAll").hasRole("ADMIN")
                     .requestMatchers("/api/payment-links/getAll").hasRole("ADMIN")
