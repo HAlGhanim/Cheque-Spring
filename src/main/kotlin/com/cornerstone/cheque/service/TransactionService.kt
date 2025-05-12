@@ -1,37 +1,54 @@
 package com.cornerstone.cheque.service
 
 import com.cornerstone.cheque.model.Transaction
+import com.cornerstone.cheque.model.TransactionResponse
 import com.cornerstone.cheque.repo.TransactionRepository
+import com.cornerstone.cheque.repo.AccountRepository
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
+import java.time.LocalDateTime
 
 @Service
-class TransactionService(private val repository: TransactionRepository,
-    private val currencyService: CurrencyService) {
+class TransactionService(
+    private val repository: TransactionRepository,
+    private val accountRepository: AccountRepository
+) {
 
-    //fun create(entity: Transaction): Transaction = repository.save(entity)
+    fun create(entity: Transaction): Transaction =
+        repository.save(entity)
 
-    fun create(entity: Transaction): Transaction {
-        val converted = currencyService.convertToKWD(entity.amount, entity.currency)
-        val updatedEntity = entity.copy(convertedAmount = converted)
-        return repository.save(updatedEntity)
-    }
+    fun getById(id: Long): Transaction? =
+        repository.findById(id).orElse(null)
 
-    fun getById(id: Long): Transaction? = repository.findById(id).orElse(null)
+    fun getAll(): List<Transaction> =
+        repository.findAll()
 
-    fun getAll(): List<Transaction> = repository.findAll()
+    fun getByAccountNumber(accountNumber: String): List<TransactionResponse> {
+        val account = accountRepository.findByAccountNumber(accountNumber)
+            ?: throw IllegalArgumentException("Account not found")
 
-
-    // for monthly summary
-    fun getMonthlySummaryInKwd(): Map<String, Double> {
-        val allTransactions = repository.findAll()
-        return allTransactions
-            .groupBy { tx ->
-                tx.createdAt?.withDayOfMonth(1)?.toLocalDate()?.toString() ?: "Unknown"
+        return repository.findAll()
+            .filter {
+                (it.senderAccount?.accountNumber == account.accountNumber) ||
+                        (it.receiverAccount?.accountNumber == account.accountNumber)
             }
-            .mapValues { (_, txs) ->
-                txs.sumOf {
-                    currencyService.convertToKWD(amount = it.amount, fromCurrency = it.currency)
+            .mapNotNull {
+                val sender = it.senderAccount
+                val receiver = it.receiverAccount
+                if (sender != null && receiver != null) {
+                    TransactionResponse(
+                        id = it.id,
+                        senderAccountNumber = sender.accountNumber,
+                        receiverAccountNumber = receiver.accountNumber,
+                        amount = it.amount,
+                        createdAt = it.createdAt
+                    )
+                } else {
+                    null
                 }
             }
     }
 }
+
+
+

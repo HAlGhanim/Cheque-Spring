@@ -11,22 +11,21 @@ import javax.crypto.SecretKey
 class JwtService(
     @Value("\${jwt-secret}")
     private val jwtSecret: String
-)
-{
+) {
+
     private val secretKey: SecretKey = Keys.hmacShaKeyFor(jwtSecret.encodeToByteArray())
-    private val expirationMs: Long = 1000 * 60 * 60
+    private val expirationMs: Long = 1000 * 60 * 60 * 24
 
     fun generateToken(username: String): String {
-    val now = Date()
-    val expiry = Date(now.time + expirationMs)
+        val now = Date()
+        val expiry = Date(now.time + expirationMs)
 
-
-    return Jwts.builder()
-        .setSubject(username)
-        .setIssuedAt(now)
-        .setExpiration(expiry)
-        .signWith(secretKey)
-        .compact()
+        return Jwts.builder()
+            .setSubject(username)
+            .setIssuedAt(now)
+            .setExpiration(expiry)
+            .signWith(secretKey)
+            .compact()
     }
 
     fun extractUsername(token: String): String =
@@ -37,11 +36,11 @@ class JwtService(
             .body
             .subject
 
-
-    fun isTokenValid(token: String, username: String): Boolean {
+    fun isTokenValid(token: String): Boolean {
         return try {
-            extractUsername(token) == username
-        } catch (e: Exception){
+            extractUsername(token)
+            true
+        } catch (e: Exception) {
             false
         }
     }

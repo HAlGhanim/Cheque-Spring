@@ -2,39 +2,48 @@ package com.cornerstone.cheque.controller
 
 import com.cornerstone.cheque.model.Account
 import com.cornerstone.cheque.model.AccountRequest
+import com.cornerstone.cheque.model.AccountResponse
+import com.cornerstone.cheque.repo.AccountRepository
 import com.cornerstone.cheque.service.AccountService
 import com.cornerstone.cheque.service.UserService
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
+import java.time.LocalDateTime
 
+@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/accounts")
-class AccountController(private val service: AccountService,
-                        private val repository: UserService) {
-
+class AccountController(
+    private val accountService: AccountService,
+    private val userService: UserService
+) {
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping("/create")
-    fun createAccount(@RequestBody request: AccountRequest): ResponseEntity<Account> {
-        val user = repository.getById(request.userId)
-
-        val account = Account(
-            accountNumber = request.accountNumber,
-            user = user,
-            balance = request.balance,
-            spendingLimit = request.spendingLimit,
-            currency = request.currency,
-            accountType = request.accountType,
-            createdAt = request.createdAt
-        )
-        return ResponseEntity.ok(service.create(account))
+    fun createAccount(@RequestBody request: AccountRequest, principal: Principal): ResponseEntity<Any> {
+        val user = userService.findByUsername(principal.name)
+            ?: throw IllegalStateException("User not authenticated")
+        val userId = user.id ?: throw IllegalStateException("User ID missing")
+        return ResponseEntity.ok(accountService.create(userId, request))
     }
-    @GetMapping("/getAll")
-    fun getAll(): ResponseEntity<List<Account>> =
-        ResponseEntity.ok(service.getAll())
 
-    @GetMapping("/<built-in function id>")
-    fun getById(@PathVariable id: Long): ResponseEntity<Account> {
-        val result = service.getById(id)
-        return if (result != null) ResponseEntity.ok(result)
-        else ResponseEntity.notFound().build()
+    @GetMapping("/getAll")
+    fun getAll(): ResponseEntity<List<AccountResponse>> =
+        ResponseEntity.ok(accountService.getAll())
+
+    @GetMapping("/{accountNumber}")
+    fun getByAccountNumber(@PathVariable accountNumber: String): ResponseEntity<AccountResponse> {
+        val result = accountService.getByAccountNumber(accountNumber)
+            ?: throw IllegalArgumentException("Account not found")
+        return ResponseEntity.ok(result)
+    }
+
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @GetMapping("/my")
+    fun getMyAccounts(principal: Principal): ResponseEntity<List<AccountResponse>> {
+        val user = userService.findByUsername(principal.name)
+            ?: throw IllegalStateException("User not authenticated")
+        return ResponseEntity.ok(accountService.getByUserId(user.email))
     }
 }

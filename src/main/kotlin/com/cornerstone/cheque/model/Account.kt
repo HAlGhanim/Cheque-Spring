@@ -1,28 +1,51 @@
 package com.cornerstone.cheque.model
 
 import jakarta.persistence.*
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Entity
+@Table(name = "accounts")
 data class Account(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
-
-    @Column(nullable = false)
+    @Id
+    @Column(name = "account_number")
     val accountNumber: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     val user: User?,
 
-    val balance: Double,
-    val spendingLimit: Int,
+    var balance: BigDecimal,
+
+    @Column(name = "spending_limit")
+    val spendingLimit: Int?,
+
+    @Column(nullable = false)
     val currency: String,
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "account_type", nullable = false)
     var accountType: AccountType = AccountType.CUSTOMER,
-    val createdAt: LocalDateTime
+
+    @Column(name = "created_at")
+    val createdAt: LocalDateTime  = LocalDateTime.now()
 )
 
 enum class AccountType {
-    CUSTOMER, MARCHANT
+    CUSTOMER, MERCHANT
 }
+data class AccountRequest(
+    var balance: BigDecimal,
+    val spendingLimit: Int?,
+    val currency: String,
+    val accountType: AccountType,
+)
+data class AccountResponse(
+    val accountNumber: String,
+    val userId: Long,
+    val balance: BigDecimal,
+    val spendingLimit: Int?,
+    val currency: String,
+    val accountType: AccountType,
+    val createdAt: LocalDateTime
+)

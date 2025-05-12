@@ -1,25 +1,39 @@
 package com.cornerstone.cheque.model
 
 import jakarta.persistence.*
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Entity
+@Table(name = "transactions")
 data class Transaction(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
     @ManyToOne
-    @JoinColumn(name = "sender_account_id")
-    val senderAccount: Account? = null,
+    @JoinColumn(name = "sender_account_number")
+    val senderAccount: Account,
 
     @ManyToOne
-    @JoinColumn(name = "receiver_account_id")
-    val receiverAccount: Account? = null,
+    @JoinColumn(name = "receiver_account_number")
+    val receiverAccount: Account,
 
-    var amount: Double = 0.0,
-    // for the multicurrency
-    var currency: String = "KWD",
-    var convertedAmount: Double = 0.0,
+    @Column(nullable = false)
+    val amount: BigDecimal,
 
-    var createdAt: LocalDateTime? = null
+    @Column(name = "created_at")
+    val createdAt: LocalDateTime = LocalDateTime.now()
+)
+
+data class TransactionRequest(
+    val senderAccount: String,  // accountNumber
+    val receiverAccount: String,
+    val amount: BigDecimal
+)
+data class TransactionResponse(
+    val id: Long,
+    val senderAccountNumber: String,
+    val receiverAccountNumber: String,
+    val amount: BigDecimal,
+    val createdAt: LocalDateTime
 )
