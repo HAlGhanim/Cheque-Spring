@@ -16,6 +16,11 @@ class TransactionController(private val service: TransactionService) {
     @GetMapping
     fun getAll(): ResponseEntity<List<Transaction>> =
         ResponseEntity.ok(service.getAll())
+// monthly summary
+    @GetMapping("/summary")
+    fun getMonthlySummary(): ResponseEntity<Map<String, Double>> =
+        ResponseEntity.ok(service.getMonthlySummaryInKwd())
+
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: Long): ResponseEntity<Transaction> {

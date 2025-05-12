@@ -19,4 +19,19 @@ class TransactionService(private val repository: TransactionRepository,
     fun getById(id: Long): Transaction? = repository.findById(id).orElse(null)
 
     fun getAll(): List<Transaction> = repository.findAll()
+
+
+    // for monthly summary
+    fun getMonthlySummaryInKwd(): Map<String, Double> {
+        val allTransactions = repository.findAll()
+        return allTransactions
+            .groupBy { tx ->
+                tx.createdAt?.withDayOfMonth(1)?.toLocalDate()?.toString() ?: "Unknown"
+            }
+            .mapValues { (_, txs) ->
+                txs.sumOf {
+                    currencyService.convertToKWD(amount = it.amount, fromCurrency = it.currency)
+                }
+            }
+    }
 }
