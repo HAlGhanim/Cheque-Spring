@@ -1,8 +1,10 @@
 package com.cornerstone.cheque
 
+import com.cornerstone.cheque.controller.UserController
 import com.cornerstone.cheque.model.Role
 import com.cornerstone.cheque.model.User
 import com.cornerstone.cheque.repo.UserRepository
+import com.cornerstone.cheque.service.UserService
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,12 +15,29 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.hamcrest.CoreMatchers.notNullValue
+import org.junit.jupiter.api.BeforeEach
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
+import org.springframework.http.HttpStatus
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.ActiveProfiles
+import kotlin.test.assertEquals
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 class ChequeApplicationTests {
+
+	private lateinit var userService: UserService
+	private lateinit var passwordEncoder: PasswordEncoder
+	private lateinit var controller: UserController
+
+	@BeforeEach
+	fun setup() {
+		userService = mock(UserService::class.java)
+		passwordEncoder = mock(PasswordEncoder::class.java)
+		controller = UserController(userService, userRepository, passwordEncoder)
+	}
 
 	@Autowired
 	lateinit var mockMvc: MockMvc
@@ -27,6 +46,7 @@ class ChequeApplicationTests {
 	lateinit var userRepository: UserRepository
 
 	private val objectMapper = jacksonObjectMapper()
+
 
 	@Test
 	fun `should register a new user`() {
@@ -65,6 +85,34 @@ class ChequeApplicationTests {
 			jsonPath("$.token", notNullValue())
 		}
 	}
+	@Test
+	fun `should get all users`() {
+		val users = listOf(User(
+			email = "newuser7@gmail.com",
+			password = "pass123",
+			role = Role.USER
+		))
+		`when`(userService.getAll()).thenReturn(users)
 
+		val response = controller.getAll()
+
+		assertEquals(HttpStatus.OK, response.statusCode)
+		assertEquals(1, response.body?.size)
+	}
+
+	@Test
+	fun `should get user by ID`() {
+		val user = User(
+			email = "newuser7@gmail.com",
+			password = "pass123",
+			role = Role.USER
+		)
+		`when`(userService.getById(1L)).thenReturn(user)
+
+		val response = controller.getById(1L)
+
+		assertEquals(HttpStatus.OK, response.statusCode)
+		assertEquals("newuser7@gmail.com", response.body?.email)
+	}
 
 }
