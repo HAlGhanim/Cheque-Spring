@@ -20,7 +20,7 @@ Secure user registration & login
 git clone https://github.com/your-org/cheque.git
 cd cheque
 
-### 2. Configure application properties
+### 2. Configure application properties (create a database)
 ````properties
 spring.application.name=cheque
 spring.datasource.username=postgres
