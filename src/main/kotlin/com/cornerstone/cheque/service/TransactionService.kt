@@ -1,5 +1,7 @@
 package com.cornerstone.cheque.service
 
+import com.cornerstone.cheque.model.Account
+import com.cornerstone.cheque.model.AccountResponse
 import com.cornerstone.cheque.model.Transaction
 import com.cornerstone.cheque.model.TransactionResponse
 import com.cornerstone.cheque.repo.TransactionRepository
@@ -22,6 +24,18 @@ class TransactionService(
 
     fun getAll(): List<Transaction> =
         repository.findAll()
+
+    fun deposit(amount: BigDecimal, account: Account): Account {
+        account.balance += amount
+        return accountRepository.save(account)
+    }
+
+    fun withdraw(amount: BigDecimal, account: Account): Account {
+        if (account.balance < amount) throw IllegalArgumentException("Insufficient balance")
+        account.balance -= amount
+        return accountRepository.save(account)
+    }
+
 
     fun getByAccountNumber(accountNumber: String): List<TransactionResponse> {
         val account = accountRepository.findByAccountNumber(accountNumber)

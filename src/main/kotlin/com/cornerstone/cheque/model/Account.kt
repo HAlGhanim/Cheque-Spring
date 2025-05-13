@@ -15,7 +15,7 @@ data class Account(
     @JoinColumn(name = "user_id", nullable = false)
     val user: User?,
 
-    var balance: BigDecimal,
+    var balance: BigDecimal = BigDecimal.ZERO,
 
     @Column(name = "spending_limit")
     val spendingLimit: Int?,
@@ -35,7 +35,6 @@ enum class AccountType {
     CUSTOMER, MERCHANT
 }
 data class AccountRequest(
-    var balance: BigDecimal,
     val spendingLimit: Int?,
     val currency: String,
     val accountType: AccountType,
