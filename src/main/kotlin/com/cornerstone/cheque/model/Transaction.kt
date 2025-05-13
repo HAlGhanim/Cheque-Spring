@@ -37,3 +37,7 @@ data class TransactionResponse(
     val amount: BigDecimal,
     val createdAt: LocalDateTime
 )
+
+data class DepositRequest(
+    val amount: BigDecimal
+)
