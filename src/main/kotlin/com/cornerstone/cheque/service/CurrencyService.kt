@@ -1,6 +1,7 @@
 package com.cornerstone.cheque.service
 
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 
 @Service
 class CurrencyService {
@@ -10,10 +11,10 @@ class CurrencyService {
         "EUR" to 0.28,
         "GBP" to 0.24
     )
-
-    fun convertToKWD(amount: Double, fromCurrency: String): Double {
+    fun convertToKWD(amount: BigDecimal, fromCurrency: String): BigDecimal {
         val rate = rates[fromCurrency]
             ?: throw IllegalArgumentException("Unsupported currency: $fromCurrency")
-    return amount *rate
+        return amount.multiply(BigDecimal.valueOf(rate))
     }
+
 }

@@ -13,11 +13,17 @@ import java.time.LocalDateTime
 @Service
 class TransactionService(
     private val repository: TransactionRepository,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val currencyService: CurrencyService
 ) {
 
-    fun create(entity: Transaction): Transaction =
-        repository.save(entity)
+    fun create(entity: Transaction): Transaction
+
+    {
+        val converted = currencyService.convertToKWD(entity.amount, entity.currency)
+        val updatedEntity = entity.copy(convertedAmount = converted)
+        return repository.save(updatedEntity)
+    }
 
     fun getById(id: Long): Transaction? =
         repository.findById(id).orElse(null)
@@ -46,23 +52,21 @@ class TransactionService(
                 (it.senderAccount?.accountNumber == account.accountNumber) ||
                         (it.receiverAccount?.accountNumber == account.accountNumber)
             }
-            .mapNotNull {
-                val sender = it.senderAccount
-                val receiver = it.receiverAccount
-                if (sender != null && receiver != null) {
-                    TransactionResponse(
-                        id = it.id,
-                        senderAccountNumber = sender.accountNumber,
-                        receiverAccountNumber = receiver.accountNumber,
-                        amount = it.amount,
-                        createdAt = it.createdAt
-                    )
-                } else {
-                    null
+            .map {
+                TransactionResponse(
+                    id = it.id,
+                    senderAccountNumber = it.senderAccount.accountNumber,
+                    receiverAccountNumber = it.receiverAccount.accountNumber,
+                    amount = it.amount,
+                    currency = it.currency,
+                    convertedAmount = it.convertedAmount,
+                    createdAt = it.createdAt
+                )
+
                 }
             }
     }
-}
+
 
 
 

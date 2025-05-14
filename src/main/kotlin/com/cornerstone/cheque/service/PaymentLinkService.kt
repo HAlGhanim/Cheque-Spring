@@ -73,14 +73,14 @@ class PaymentLinkService(
             throw IllegalArgumentException("Sender account has insufficient balance")
         }
 
-        // Deduct + Add
+
         senderAccount.balance -= paymentLink.amount
         recipientAccount.balance += paymentLink.amount
 
         accountRepository.save(senderAccount)
         accountRepository.save(recipientAccount)
 
-        // Create transaction
+
         val transaction = Transaction(
             senderAccount = senderAccount,
             receiverAccount = recipientAccount,
@@ -89,7 +89,7 @@ class PaymentLinkService(
         )
         val savedTransaction = transactionRepository.save(transaction)
 
-        // Update payment link
+
         paymentLink.transaction = savedTransaction
         paymentLink.status = "USED"
 

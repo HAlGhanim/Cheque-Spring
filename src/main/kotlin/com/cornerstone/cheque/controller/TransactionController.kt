@@ -55,8 +55,10 @@ class TransactionController(
             senderAccount = sender,
             receiverAccount = receiver,
             amount = request.amount,
+            currency = request.currency,
             createdAt = LocalDateTime.now()
         )
+
         val saved = service.create(transaction)
 
         return ResponseEntity.ok(
@@ -65,10 +67,12 @@ class TransactionController(
                 senderAccountNumber = sender.accountNumber,
                 receiverAccountNumber = receiver.accountNumber,
                 amount = saved.amount,
+                currency = saved.currency,
+                convertedAmount = saved.convertedAmount,
                 createdAt = saved.createdAt
             )
         )
-    }
+}
 
     @GetMapping("/getAll")
     fun getAll(): ResponseEntity<List<TransactionResponse>> =
@@ -78,7 +82,10 @@ class TransactionController(
                 senderAccountNumber = it.senderAccount.accountNumber,
                 receiverAccountNumber = it.receiverAccount.accountNumber,
                 amount = it.amount,
+                currency = it.currency,
+                convertedAmount = it.convertedAmount,
                 createdAt = it.createdAt
+
             )
         })
 
