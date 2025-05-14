@@ -21,7 +21,7 @@ data class Transaction(
     @Column(nullable = false)
     val amount: BigDecimal,
 
-    //new
+
     @Column(nullable = false)
     val currency: String = "KWD",
 
@@ -33,17 +33,17 @@ data class Transaction(
 )
 
 data class TransactionRequest(
-    val senderAccount: String,  // accountNumber
+    val senderAccount: String,
     val receiverAccount: String,
     val amount: BigDecimal,
-    val currency: String //new
+    val currency: String
 )
 data class TransactionResponse(
     val id: Long,
     val senderAccountNumber: String,
     val receiverAccountNumber: String,
     val amount: BigDecimal,
-    val currency: String,                 // new 2
+    val currency: String,
     val convertedAmount: BigDecimal,
     val createdAt: LocalDateTime
 )
