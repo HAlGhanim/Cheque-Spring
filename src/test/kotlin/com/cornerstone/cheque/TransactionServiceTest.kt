@@ -16,7 +16,6 @@ class TransactionServiceTest {
     private lateinit var service: TransactionService
 
     private val user = User(
-        id = 1L,
         email = "newuser7@gmail.com",
         password = "pass123",
         role = Role.USER
@@ -32,9 +31,9 @@ class TransactionServiceTest {
     @Test
     fun `should create transaction`() {
         val account = Account(
-            accountNumber = "A1",
+            accountNumber = "7738384767373",
             user = user,
-            balance = BigDecimal("1000.00"),
+            balance = BigDecimal("1000.000"),
             spendingLimit = 500,
             currency = "KWD",
             accountType = AccountType.CUSTOMER,
@@ -43,7 +42,7 @@ class TransactionServiceTest {
         val transaction = Transaction(
             senderAccount = account,
             receiverAccount = account,
-            amount = BigDecimal("150.0"),
+            amount = BigDecimal("150.000"),
             createdAt = LocalDateTime.now()
         )
 
@@ -51,7 +50,7 @@ class TransactionServiceTest {
 
         val result = service.create(transaction)
 
-        assertEquals(BigDecimal("150.0"), result.amount)
-        assertEquals("A1", result.senderAccount?.accountNumber)
+        assertEquals(BigDecimal("150.000"), result.amount)
+        assertEquals("7738384767373", result.senderAccount.accountNumber)
     }
 }
