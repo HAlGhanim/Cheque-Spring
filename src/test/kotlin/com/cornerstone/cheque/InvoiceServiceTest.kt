@@ -13,7 +13,7 @@ import kotlin.test.*
 
 class InvoiceServiceTest {
 
-    private lateinit var invoiceRepository: InvoiceRepository
+    private lateinit var transferRepository: TransferRepository
     private lateinit var transactionRepository: TransactionRepository
     private lateinit var userRepository: UserRepository
     private lateinit var accountRepository: AccountRepository
@@ -32,11 +32,11 @@ class InvoiceServiceTest {
 
     @BeforeEach
     fun setup() {
-        invoiceRepository = mock(InvoiceRepository::class.java)
+        transferRepository = mock(TransferRepository::class.java)
         transactionRepository = mock(TransactionRepository::class.java)
         userRepository = mock(UserRepository::class.java)
         accountRepository = mock(AccountRepository::class.java)
-        service = InvoiceService(invoiceRepository, transactionRepository, userRepository, accountRepository)
+        service = InvoiceService(transferRepository, transactionRepository, userRepository, accountRepository)
 
         senderAccount = Account(
             accountNumber = "7738384767373",
@@ -71,13 +71,13 @@ class InvoiceServiceTest {
         )
 
         val transaction = Transaction(1, senderAccount, receiverAccount, request.amount, LocalDateTime.now())
-        val invoice = Invoice(1, user, receiverUser, request.amount, transaction, request.description, LocalDateTime.now())
+        val transfer = Transfer(1, user, receiverUser, request.amount, transaction, request.description, LocalDateTime.now())
 
         `when`(userRepository.findByEmail(user.email)).thenReturn(user)
         `when`(accountRepository.findByAccountNumber("7738384767373")).thenReturn(senderAccount)
         `when`(accountRepository.findByAccountNumber("77383847477744")).thenReturn(receiverAccount)
         `when`(transactionRepository.save(any())).thenReturn(transaction)
-        `when`(invoiceRepository.save(any())).thenReturn(invoice)
+        `when`(transferRepository.save(any())).thenReturn(transfer)
 
         val response = service.create(request, user.email)
 

@@ -15,52 +15,7 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/api/transactions")
 class TransactionController(
-    private val service: TransactionService,
-    private val accountRepository: AccountRepository
-) {
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @PostMapping
-    fun create(@RequestBody request: TransactionRequest): ResponseEntity<TransactionResponse> {
-        val sender = accountRepository.findByAccountNumber(request.senderAccount)
-            ?: throw IllegalArgumentException("Sender account not found")
-
-        val receiver = accountRepository.findByAccountNumber(request.receiverAccount)
-            ?: throw IllegalArgumentException("Receiver account not found")
-
-        if (sender.balance < request.amount)
-            throw IllegalArgumentException("Insufficient balance")
-
-        if (sender.accountType == AccountType.CUSTOMER) {
-            val spendingLimit = sender.spendingLimit
-            if (spendingLimit == null || request.amount > spendingLimit.toBigDecimal()) {
-                throw IllegalArgumentException("Exceeded the spending limit")
-            }
-        }
-
-        sender.balance -= request.amount
-        receiver.balance += request.amount
-
-        accountRepository.save(sender)
-        accountRepository.save(receiver)
-
-        val transaction = Transaction(
-            senderAccount = sender,
-            receiverAccount = receiver,
-            amount = request.amount,
-            createdAt = LocalDateTime.now()
-        )
-        val saved = service.create(transaction)
-
-        return ResponseEntity.ok(
-            TransactionResponse(
-                id = saved.id,
-                senderAccountNumber = sender.accountNumber,
-                receiverAccountNumber = receiver.accountNumber,
-                amount = saved.amount,
-                createdAt = saved.createdAt
-            )
-        )
-    }
+    private val service: TransactionService) {
 
     @GetMapping("/getAll")
     fun getAll(): ResponseEntity<List<TransactionResponse>> =

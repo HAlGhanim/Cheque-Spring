@@ -5,6 +5,7 @@ import com.cornerstone.cheque.model.PaymentLink
 import com.cornerstone.cheque.model.PaymentLinkRequest
 import com.cornerstone.cheque.model.PaymentLinkUseRequest
 import com.cornerstone.cheque.model.Transaction
+import com.cornerstone.cheque.model.transactionType
 import com.cornerstone.cheque.repo.AccountRepository
 import com.cornerstone.cheque.repo.PaymentLinkRepository
 import com.cornerstone.cheque.repo.TransactionRepository
@@ -85,7 +86,9 @@ class PaymentLinkService(
             senderAccount = senderAccount,
             receiverAccount = recipientAccount,
             amount = paymentLink.amount,
-            createdAt = LocalDateTime.now()
+            createdAt = LocalDateTime.now(),
+            transType = transactionType.PAYMENT_LINK
+
         )
         val savedTransaction = transactionRepository.save(transaction)
 

@@ -11,7 +11,7 @@ import java.security.Principal
 @PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/invoices")
-class InvoiceController(private val invoiceService: InvoiceService) {
+class TransferController(private val invoiceService: InvoiceService) {
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping
