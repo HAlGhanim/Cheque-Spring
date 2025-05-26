@@ -11,6 +11,7 @@ import com.cornerstone.cheque.repo.PaymentLinkRepository
 import com.cornerstone.cheque.repo.TransactionRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Service
 class PaymentLinkService(
@@ -44,6 +45,7 @@ class PaymentLinkService(
             ?: throw IllegalArgumentException("Account not found")
 
         val paymentLink = PaymentLink(
+            uuid = UUID.randomUUID().toString(),
             account = account,
             amount = request.amount,
             description = request.description,
@@ -53,9 +55,9 @@ class PaymentLinkService(
         return paymentLinkRepository.save(paymentLink)
     }
 
-    fun usePaymentLink(id: Long, request: PaymentLinkUseRequest): PaymentLink {
-        val paymentLink = paymentLinkRepository.findById(id)
-            .orElseThrow { IllegalArgumentException("Payment link not found") }
+    fun usePaymentLink(uuid: String, request: PaymentLinkUseRequest): PaymentLink {
+        val paymentLink = paymentLinkRepository.findByUuid(uuid)
+            ?: throw IllegalArgumentException("Payment link not found")
 
         if (paymentLink.status != "ACTIVE") {
             throw IllegalStateException("Payment link is not active")
@@ -74,7 +76,7 @@ class PaymentLinkService(
             throw IllegalArgumentException("Sender account has insufficient balance")
         }
 
-        // Deduct + Add
+        // Transfer funds
         senderAccount.balance -= paymentLink.amount
         recipientAccount.balance += paymentLink.amount
 
@@ -88,8 +90,8 @@ class PaymentLinkService(
             amount = paymentLink.amount,
             createdAt = LocalDateTime.now(),
             transType = transactionType.PAYMENT_LINK
-
         )
+
         val savedTransaction = transactionRepository.save(transaction)
 
         // Update payment link

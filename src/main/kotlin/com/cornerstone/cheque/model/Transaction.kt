@@ -24,7 +24,7 @@ data class Transaction(
     @Column(name = "created_at")
     val createdAt: LocalDateTime = LocalDateTime.now(),
 
-    val transType: transactionType)
+    val transType: transactionType = transactionType.NONE)
 
 data class TransactionRequest(
     val senderAccount: String,  // accountNumber
@@ -39,5 +39,5 @@ data class TransactionResponse(
     val createdAt: LocalDateTime
 )
 enum class transactionType {
-    PAYMENT_LINK, TRANSFER
+    PAYMENT_LINK, TRANSFER, NONE
 }
