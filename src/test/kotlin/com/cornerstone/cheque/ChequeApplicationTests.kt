@@ -107,9 +107,9 @@ class ChequeApplicationTests {
 			password = "pass123",
 			role = Role.USER
 		)
-		`when`(userService.getById(1L)).thenReturn(user)
+		`when`(userService.getById(1)).thenReturn(user)
 
-		val response = controller.getById(1L)
+		val response = controller.getById(1)
 
 		assertEquals(HttpStatus.OK, response.statusCode)
 		assertEquals("newuser7@gmail.com", response.body?.email)

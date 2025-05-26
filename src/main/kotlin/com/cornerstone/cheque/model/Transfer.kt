@@ -2,12 +2,11 @@ package com.cornerstone.cheque.model
 
 import jakarta.persistence.*
 import java.math.BigDecimal
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "invoices")
-data class Invoice(
+data class Transfer(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
@@ -32,4 +31,5 @@ data class Invoice(
 
     @JoinColumn(name = "created_at", nullable = false)
     val createdAt: LocalDateTime = LocalDateTime.now()
+
 )

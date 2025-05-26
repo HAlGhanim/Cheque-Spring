@@ -1,7 +1,8 @@
 package com.cornerstone.cheque.service
 
-import com.cornerstone.cheque.model.Invoice
+import com.cornerstone.cheque.model.Transfer
 import com.cornerstone.cheque.model.Transaction
+import com.cornerstone.cheque.model.transactionType
 import com.cornerstone.cheque.repo.*
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -9,7 +10,7 @@ import java.time.LocalDateTime
 
 @Service
 class InvoiceService(
-    private val invoiceRepository: InvoiceRepository,
+    private val transferRepository: TransferRepository,
     private val transactionRepository: TransactionRepository,
     private val userRepository: UserRepository,
     private val accountRepository: AccountRepository
@@ -41,12 +42,13 @@ class InvoiceService(
             senderAccount = senderAccount,
             receiverAccount = receiverAccount,
             amount = request.amount,
-            createdAt = LocalDateTime.now()
+            createdAt = LocalDateTime.now(),
+            transType = transactionType.TRANSFER
         )
 
         val savedTransaction = transactionRepository.save(transaction)
 
-        val invoice = Invoice(
+        val transfer = Transfer(
             fromUser = fromUser,
             toUser = toUser,
             amount = request.amount,
@@ -55,44 +57,44 @@ class InvoiceService(
             createdAt = LocalDateTime.now()
         )
 
-        return toResponse(invoiceRepository.save(invoice))
+        return toResponse(transferRepository.save(transfer))
     }
 
     fun getById(id: Long): InvoiceResponse? =
-        invoiceRepository.findById(id).orElse(null)?.let { toResponse(it) }
+        transferRepository.findById(id).orElse(null)?.let { toResponse(it) }
 
     fun getAll(): List<InvoiceResponse> =
-        invoiceRepository.findAll().map { toResponse(it) }
+        transferRepository.findAll().map { toResponse(it) }
 
     fun getByUserId(userId: Long): List<InvoiceResponse> =
-        invoiceRepository.findByFromUserIdOrToUserId(userId, userId).map { toResponse(it) }
+        transferRepository.findByFromUserIdOrToUserId(userId, userId).map { toResponse(it) }
 
     fun getMyInvoices(userEmail: String): List<InvoiceResponse> {
         val user = userRepository.findByEmail(userEmail)
             ?: throw IllegalArgumentException("User not found")
-        return invoiceRepository.findByFromUserIdOrToUserId(user.id!!, user.id!!)
+        return transferRepository.findByFromUserIdOrToUserId(user.id!!, user.id!!)
             .map { toResponse(it) }
     }
 
     fun getByTransactionId(transactionId: Long): List<InvoiceResponse> =
-        invoiceRepository.findByTransactionId(transactionId).map { toResponse(it) }
+        transferRepository.findByTransactionId(transactionId).map { toResponse(it) }
 
     fun getByAccountNumber(accountNumber: String): List<InvoiceResponse> =
-        invoiceRepository.findByTransaction_SenderAccount_AccountNumberOrTransaction_ReceiverAccount_AccountNumber(
+        transferRepository.findByTransaction_SenderAccount_AccountNumberOrTransaction_ReceiverAccount_AccountNumber(
             accountNumber, accountNumber
         ).map { toResponse(it) }
 
-    private fun toResponse(invoice: Invoice): InvoiceResponse =
+    private fun toResponse(transfer: Transfer): InvoiceResponse =
         InvoiceResponse(
-            id = invoice.id!!,
-            fromUserId = invoice.fromUser.id!!,
-            toUserId = invoice.toUser.id!!,
-            senderAccountNumber = invoice.transaction.senderAccount.accountNumber,
-            receiverAccountNumber = invoice.transaction.receiverAccount.accountNumber,
-            amount = invoice.amount,
-            transactionId = invoice.transaction.id,
-            description = invoice.description,
-            createdAt = invoice.createdAt
+            id = transfer.id!!,
+            fromUserId = transfer.fromUser.id!!,
+            toUserId = transfer.toUser.id!!,
+            senderAccountNumber = transfer.transaction.senderAccount.accountNumber,
+            receiverAccountNumber = transfer.transaction.receiverAccount.accountNumber,
+            amount = transfer.amount,
+            transactionId = transfer.transaction.id,
+            description = transfer.description,
+            createdAt = transfer.createdAt
         )
 }
 

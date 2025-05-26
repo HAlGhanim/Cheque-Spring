@@ -27,10 +27,15 @@ class PaymentLinkController(
         ResponseEntity.ok(service.toResponse(service.create(request)))
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @PostMapping("/{id}/use")
-    fun use(@PathVariable id: Long, @RequestBody request: PaymentLinkUseRequest): ResponseEntity<PaymentLinkResponse> =
-        ResponseEntity.ok(service.toResponse(service.usePaymentLink(id, request)))
-
+    @PostMapping("/use/{uuid}")
+    fun use(@PathVariable uuid: String, @RequestBody request: PaymentLinkUseRequest): ResponseEntity<Any> {
+        return try {
+            val result = service.usePaymentLink(uuid, request)
+            ResponseEntity.ok(result)
+        } catch (e: Exception) {
+            ResponseEntity.status(400).body(mapOf("error" to e.message))
+        }
+    }
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<Void> {
         service.delete(id)

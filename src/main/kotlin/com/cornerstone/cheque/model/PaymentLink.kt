@@ -2,6 +2,7 @@ package com.cornerstone.cheque.model
 
 import jakarta.persistence.*
 import java.math.BigDecimal
+import java.util.UUID
 
 @Entity
 @Table(name = "payment_links")
@@ -9,6 +10,8 @@ data class PaymentLink(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
+
+    val uuid: String = UUID.randomUUID().toString(),
 
     @ManyToOne
     @JoinColumn(name = "account_number", nullable = false)
@@ -31,10 +34,12 @@ data class PaymentLink(
 data class PaymentLinkRequest(
     val accountNumber: String,
     val amount: BigDecimal,
+    val uuid: String,
     val description: String
 )
 
 data class PaymentLinkUseRequest(
-    val recipientAccountNumber: String
-)
+    val recipientAccountNumber: String,
+    val uuid: String
+    )
 

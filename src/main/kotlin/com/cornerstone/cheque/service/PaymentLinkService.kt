@@ -5,11 +5,13 @@ import com.cornerstone.cheque.model.PaymentLink
 import com.cornerstone.cheque.model.PaymentLinkRequest
 import com.cornerstone.cheque.model.PaymentLinkUseRequest
 import com.cornerstone.cheque.model.Transaction
+import com.cornerstone.cheque.model.transactionType
 import com.cornerstone.cheque.repo.AccountRepository
 import com.cornerstone.cheque.repo.PaymentLinkRepository
 import com.cornerstone.cheque.repo.TransactionRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Service
 class PaymentLinkService(
@@ -43,6 +45,7 @@ class PaymentLinkService(
             ?: throw IllegalArgumentException("Account not found")
 
         val paymentLink = PaymentLink(
+            uuid = UUID.randomUUID().toString(),
             account = account,
             amount = request.amount,
             description = request.description,
@@ -52,9 +55,9 @@ class PaymentLinkService(
         return paymentLinkRepository.save(paymentLink)
     }
 
-    fun usePaymentLink(id: Long, request: PaymentLinkUseRequest): PaymentLink {
-        val paymentLink = paymentLinkRepository.findById(id)
-            .orElseThrow { IllegalArgumentException("Payment link not found") }
+    fun usePaymentLink(uuid: String, request: PaymentLinkUseRequest): PaymentLink {
+        val paymentLink = paymentLinkRepository.findByUuid(uuid)
+            ?: throw IllegalArgumentException("Payment link not found")
 
         if (paymentLink.status != "ACTIVE") {
             throw IllegalStateException("Payment link is not active")
@@ -72,8 +75,6 @@ class PaymentLinkService(
         if (senderAccount.balance < paymentLink.amount) {
             throw IllegalArgumentException("Sender account has insufficient balance")
         }
-
-
         senderAccount.balance -= paymentLink.amount
         recipientAccount.balance += paymentLink.amount
 
@@ -85,8 +86,10 @@ class PaymentLinkService(
             senderAccount = senderAccount,
             receiverAccount = recipientAccount,
             amount = paymentLink.amount,
-            createdAt = LocalDateTime.now()
+            createdAt = LocalDateTime.now(),
+            transType = transactionType.PAYMENT_LINK
         )
+
         val savedTransaction = transactionRepository.save(transaction)
 
 

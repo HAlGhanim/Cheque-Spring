@@ -16,7 +16,7 @@ class AccountServiceTest {
     private lateinit var service: AccountService
 
     private val user = User(
-        id = 1L,
+        id = 1,
         email = "newuser7@gmail.com",
         password = "pass123",
         role = Role.USER
@@ -32,17 +32,17 @@ class AccountServiceTest {
     @Test
     fun `should create customer account`() {
         val request = AccountRequest(
-            balance = BigDecimal("200.0"),
+            balance = BigDecimal("200.000"),
             spendingLimit = 1000,
             currency = "KWD",
             accountType = AccountType.CUSTOMER
         )
 
-        `when`(userRepository.findById(1L)).thenReturn(Optional.of(user))
+        `when`(userRepository.findById(1)).thenReturn(Optional.of(user))
         `when`(accountRepository.findByUser(user)).thenReturn(null)
         `when`(accountRepository.save(any(Account::class.java))).thenAnswer { it.arguments[0] }
 
-        val result = service.create(1L, request)
+        val result = service.create(1, request)
 
         assertEquals("KWD", result.currency)
         assertEquals(AccountType.CUSTOMER, result.accountType)

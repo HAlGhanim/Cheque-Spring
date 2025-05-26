@@ -29,8 +29,9 @@ data class Transaction(
     val convertedAmount: BigDecimal = amount,
 
     @Column(name = "created_at")
-    val createdAt: LocalDateTime = LocalDateTime.now()
-)
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+
+    val transType: transactionType = transactionType.NONE)
 
 data class TransactionRequest(
     val senderAccount: String,
@@ -47,6 +48,9 @@ data class TransactionResponse(
     val convertedAmount: BigDecimal,
     val createdAt: LocalDateTime
 )
+enum class transactionType {
+    PAYMENT_LINK, TRANSFER, NONE
+}
 
 data class DepositRequest(
     val amount: BigDecimal
