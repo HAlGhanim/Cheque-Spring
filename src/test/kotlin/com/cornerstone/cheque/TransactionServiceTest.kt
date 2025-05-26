@@ -1,6 +1,7 @@
 import com.cornerstone.cheque.model.*
 import com.cornerstone.cheque.repo.TransactionRepository
 import com.cornerstone.cheque.repo.AccountRepository
+import com.cornerstone.cheque.service.CurrencyService
 import com.cornerstone.cheque.service.TransactionService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -8,6 +9,9 @@ import org.mockito.Mockito.*
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import kotlin.test.*
+import org.mockito.Mockito.mock
+import kotlin.jvm.java
+
 
 class TransactionServiceTest {
 
@@ -25,7 +29,8 @@ class TransactionServiceTest {
     fun setup() {
         transactionRepository = mock(TransactionRepository::class.java)
         accountRepository = mock(AccountRepository::class.java)
-        service = TransactionService(transactionRepository, accountRepository)
+        val currencyService = mock(CurrencyService::class.java)
+        service = TransactionService(transactionRepository, accountRepository, currencyService)
     }
 
     @Test

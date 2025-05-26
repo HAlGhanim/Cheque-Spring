@@ -33,7 +33,6 @@ class AccountService(
         val account = Account(
             accountNumber = generateUniqueAccountNumber(),
             user = user,
-            balance = request.balance,
             spendingLimit = request.spendingLimit,
             currency = request.currency,
             accountType = request.accountType,
