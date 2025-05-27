@@ -1,6 +1,6 @@
 package com.cornerstone.cheque.controller
 
-import com.cornerstone.cheque.service.InvoiceRequest
+import com.cornerstone.cheque.service.TransferRequest
 import com.cornerstone.cheque.service.TransferResponse
 import com.cornerstone.cheque.service.InvoiceService
 import org.springframework.http.ResponseEntity
@@ -15,7 +15,7 @@ class TransferController(private val invoiceService: InvoiceService) {
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping
-    fun create(@RequestBody request: InvoiceRequest, principal: Principal): ResponseEntity<Any> {
+    fun create(@RequestBody request: TransferRequest, principal: Principal): ResponseEntity<Any> {
         val response = invoiceService.create(request, principal.name)
         return ResponseEntity.ok(response)
     }

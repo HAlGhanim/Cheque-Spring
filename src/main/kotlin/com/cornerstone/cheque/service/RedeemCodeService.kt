@@ -28,18 +28,20 @@ class RedeemService(
 
     @Transactional
     fun redeem(code: String, userEmail: String): String {
-        val redeemCode = redeemCodeRepository.findByCode(code)
-            ?: throw IllegalArgumentException("Invalid code")
-
-        if (redeemCode.used) {
-            throw IllegalStateException("Code already used")
-        }
 
         val user = userRepository.findByEmail(userEmail)
             ?: throw IllegalArgumentException("User not found")
 
         val account = accountRepository.findByUser(user)
             ?: throw IllegalArgumentException("Account not found")
+
+        val redeemCode = redeemCodeRepository.findByCode(code)
+            ?: throw IllegalArgumentException("Invalid code")
+
+
+        if (redeemCode.used) {
+            throw IllegalStateException("Code already used")
+        }
 
         // Update account balance
         account.balance += redeemCode.amount

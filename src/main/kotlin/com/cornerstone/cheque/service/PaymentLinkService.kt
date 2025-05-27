@@ -3,12 +3,12 @@ package com.cornerstone.cheque.service
 import com.cornerstone.cheque.controller.PaymentLinkResponse
 import com.cornerstone.cheque.model.PaymentLink
 import com.cornerstone.cheque.model.PaymentLinkRequest
-import com.cornerstone.cheque.model.PaymentLinkUseRequest
 import com.cornerstone.cheque.model.Transaction
 import com.cornerstone.cheque.model.transactionType
 import com.cornerstone.cheque.repo.AccountRepository
 import com.cornerstone.cheque.repo.PaymentLinkRepository
 import com.cornerstone.cheque.repo.TransactionRepository
+import com.cornerstone.cheque.repo.UserRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.UUID
@@ -17,7 +17,8 @@ import java.util.UUID
 class PaymentLinkService(
     private val paymentLinkRepository: PaymentLinkRepository,
     private val accountRepository: AccountRepository,
-    private val transactionRepository: TransactionRepository
+    private val transactionRepository: TransactionRepository,
+    private val userRepository: UserRepository
 ) {
 
     fun getResponseById(id: Long): PaymentLinkResponse {
@@ -41,8 +42,11 @@ class PaymentLinkService(
 
     fun getById(id: Long) = paymentLinkRepository.findById(id)
 
-    fun create(request: PaymentLinkRequest): PaymentLink {
-        val account = accountRepository.findByAccountNumber(request.myAccountNumber)
+    fun create(request: PaymentLinkRequest, userEmail : String): PaymentLink {
+        val fromUser = userRepository.findByEmail(userEmail)
+            ?: throw IllegalArgumentException("User not found")
+
+        val account = accountRepository.findByUser(fromUser)
             ?: throw IllegalArgumentException("Account not found")
 
         val paymentLink = PaymentLink(
@@ -56,7 +60,15 @@ class PaymentLinkService(
         return paymentLinkRepository.save(paymentLink)
     }
 
-    fun usePaymentLink(uuid: String, request: PaymentLinkUseRequest): PaymentLink {
+    fun usePaymentLink(uuid: String, userEmail : String): PaymentLink {
+
+        val user = userRepository.findByEmail(userEmail)
+            ?: throw IllegalArgumentException("User not found")
+
+        val account = accountRepository.findByUser(user)
+            ?: throw IllegalArgumentException("Account not found")
+
+
         val paymentLink = paymentLinkRepository.findByUuid(uuid)
             ?: throw IllegalArgumentException("Payment link not found")
 
@@ -64,7 +76,7 @@ class PaymentLinkService(
             throw IllegalStateException("Payment link is not active")
         }
 
-        val recipientAccount = accountRepository.findByAccountNumber(request.recipientAccountNumber)
+        val recipientAccount = accountRepository.findByAccountNumber(account.accountNumber)
             ?: throw IllegalArgumentException("Recipient account not found")
 
         val senderAccount = paymentLink.account

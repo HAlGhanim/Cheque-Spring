@@ -17,16 +17,14 @@ class InvoiceService(
     private val accountRepository: AccountRepository
 ) {
 
-    fun create(request: InvoiceRequest, userId: String): TransferResponse {
-        val fromUser = userRepository.findByEmail(userId)
-            ?: throw IllegalArgumentException("From user not found")
+    fun create(request: TransferRequest, userEmail: String): TransferResponse {
 
-        val senderAccount = accountRepository.findByAccountNumber(request.senderAccount)
-            ?: throw IllegalArgumentException("Sender account not found")
+        val fromUser = userRepository.findByEmail(userEmail)
+            ?: throw IllegalArgumentException("User not found")
 
-        if (senderAccount.user?.id != fromUser.id) {
-            throw IllegalArgumentException("You do not own the sender account")
-        }
+        val account = accountRepository.findByUser(fromUser)
+            ?: throw IllegalArgumentException("Account not found")
+
 
         val receiverAccount = accountRepository.findByAccountNumber(request.receiverAccount)
             ?: throw IllegalArgumentException("Receiver account not found")
@@ -34,18 +32,15 @@ class InvoiceService(
         val toUser = receiverAccount.user
             ?: throw IllegalArgumentException("Receiver account is not linked to any user")
 
-        if (request.senderAccount == request.receiverAccount) {
-            throw IllegalArgumentException("Sender and receiver accounts must be different")
-        }
 
-        senderAccount.balance -= request.amount
+        account.balance -= request.amount
         receiverAccount.balance += request.amount
 
-        accountRepository.save(senderAccount)
+        accountRepository.save(account)
         accountRepository.save(receiverAccount)
 
         val transaction = Transaction(
-            senderAccount = senderAccount,
+            senderAccount = account,
             receiverAccount = receiverAccount,
             amount = request.amount,
             createdAt = LocalDateTime.now(),
@@ -104,16 +99,11 @@ class InvoiceService(
         )
 }
 
-data class InvoiceRequest(
-    val senderAccount: String,
+data class TransferRequest(
     val receiverAccount: String,
     val amount: BigDecimal,
     val description: String
 )
-
-enum class InvoiceType {
-    LINK, TRANSACTION
-}
 
 data class TransferResponse(
     val id: Long,
