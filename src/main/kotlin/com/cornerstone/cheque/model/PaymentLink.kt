@@ -34,12 +34,10 @@ data class PaymentLink(
 data class PaymentLinkRequest(
     val accountNumber: String,
     val amount: BigDecimal,
-    val uuid: String,
     val description: String
 )
 
 data class PaymentLinkUseRequest(
     val recipientAccountNumber: String,
-    val uuid: String
     )
 

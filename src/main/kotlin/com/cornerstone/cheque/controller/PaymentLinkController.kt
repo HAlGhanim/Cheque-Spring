@@ -31,7 +31,7 @@ class PaymentLinkController(
     fun use(@PathVariable uuid: String, @RequestBody request: PaymentLinkUseRequest): ResponseEntity<Any> {
         return try {
             val result = service.usePaymentLink(uuid, request)
-            ResponseEntity.ok(result)
+            ResponseEntity.ok(service.toResponse(result))
         } catch (e: Exception) {
             ResponseEntity.status(400).body(mapOf("error" to e.message))
         }
