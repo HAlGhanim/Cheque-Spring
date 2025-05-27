@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 import kotlin.plus
 
 @Service
-class InvoiceService(
+class TransferService(
     private val transferRepository: TransferRepository,
     private val transactionRepository: TransactionRepository,
     private val userRepository: UserRepository,

@@ -41,7 +41,6 @@ class NewFeatureTest {
                 user = userRepository.save(User(email = "sender77@gmail.com", password = "pass", role = Role.USER)),
                 balance = BigDecimal("1000"),
                 spendingLimit = 500,
-                currency = "USD",
                 accountType = AccountType.CUSTOMER,
                 createdAt = LocalDateTime.now()
             )
@@ -53,7 +52,6 @@ class NewFeatureTest {
                 user = userRepository.save(User(email = "receiver@gmail.com", password = "pass", role = Role.USER)),
                 balance = BigDecimal("500"),
                 spendingLimit = null,
-                currency = "KWD",
                 accountType = AccountType.MERCHANT,
                 createdAt = LocalDateTime.now()
             )

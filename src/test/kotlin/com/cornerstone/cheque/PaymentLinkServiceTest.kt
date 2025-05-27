@@ -5,6 +5,7 @@ import com.cornerstone.cheque.model.*
 import com.cornerstone.cheque.repo.AccountRepository
 import com.cornerstone.cheque.repo.PaymentLinkRepository
 import com.cornerstone.cheque.repo.TransactionRepository
+import com.cornerstone.cheque.repo.UserRepository
 import com.cornerstone.cheque.service.PaymentLinkService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -16,8 +17,10 @@ import kotlin.test.*
 
 class PaymentLinkServiceTest {
 
+
     private lateinit var paymentLinkRepository: PaymentLinkRepository
     private lateinit var accountRepository: AccountRepository
+    private lateinit var userRepository: UserRepository
     private lateinit var transactionRepository: TransactionRepository
     private lateinit var service: PaymentLinkService
 
@@ -35,14 +38,16 @@ class PaymentLinkServiceTest {
         paymentLinkRepository = mock(PaymentLinkRepository::class.java)
         accountRepository = mock(AccountRepository::class.java)
         transactionRepository = mock(TransactionRepository::class.java)
-        service = PaymentLinkService(paymentLinkRepository, accountRepository, transactionRepository)
+        service = PaymentLinkService(
+            paymentLinkRepository, accountRepository, transactionRepository,
+            userRepository
+        )
 
         account = Account(
             accountNumber = "7738384767373",
             user = user,
             balance = BigDecimal("500.000"),
             spendingLimit = 300,
-            currency = "KWD",
             accountType = AccountType.CUSTOMER,
             createdAt = LocalDateTime.now()
         )

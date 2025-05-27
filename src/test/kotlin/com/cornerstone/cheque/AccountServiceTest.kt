@@ -32,9 +32,7 @@ class AccountServiceTest {
     @Test
     fun `should create customer account`() {
         val request = AccountRequest(
-            balance = BigDecimal("200.000"),
             spendingLimit = 1000,
-            currency = "KWD",
             accountType = AccountType.CUSTOMER
         )
 
@@ -44,7 +42,6 @@ class AccountServiceTest {
 
         val result = service.create(1, request)
 
-        assertEquals("KWD", result.currency)
         assertEquals(AccountType.CUSTOMER, result.accountType)
     }
 }

@@ -2,7 +2,7 @@ package com.cornerstone.cheque.controller
 
 import com.cornerstone.cheque.service.TransferRequest
 import com.cornerstone.cheque.service.TransferResponse
-import com.cornerstone.cheque.service.InvoiceService
+import com.cornerstone.cheque.service.TransferService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
@@ -11,7 +11,7 @@ import java.security.Principal
 @PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/invoices")
-class TransferController(private val invoiceService: InvoiceService) {
+class TransferController(private val invoiceService: TransferService) {
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping
