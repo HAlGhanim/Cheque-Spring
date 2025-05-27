@@ -32,7 +32,8 @@ class PaymentLinkService(
             amount = paymentLink.amount,
             description = paymentLink.description,
             status = paymentLink.status,
-            transactionId = paymentLink.transaction?.id
+            transactionId = paymentLink.transaction?.id,
+            uuid = paymentLink.uuid
         )
     }
 
@@ -41,7 +42,7 @@ class PaymentLinkService(
     fun getById(id: Long) = paymentLinkRepository.findById(id)
 
     fun create(request: PaymentLinkRequest): PaymentLink {
-        val account = accountRepository.findByAccountNumber(request.accountNumber)
+        val account = accountRepository.findByAccountNumber(request.myAccountNumber)
             ?: throw IllegalArgumentException("Account not found")
 
         val paymentLink = PaymentLink(
@@ -75,8 +76,8 @@ class PaymentLinkService(
         if (senderAccount.balance < paymentLink.amount) {
             throw IllegalArgumentException("Sender account has insufficient balance")
         }
-        senderAccount.balance -= paymentLink.amount
-        recipientAccount.balance += paymentLink.amount
+        senderAccount.balance += paymentLink.amount
+        recipientAccount.balance -= paymentLink.amount
 
         accountRepository.save(senderAccount)
         accountRepository.save(recipientAccount)

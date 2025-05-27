@@ -50,6 +50,7 @@ data class PaymentLinkResponse(
     val amount: BigDecimal,
     val description: String,
     val status: String,
-    val transactionId: Long?
+    val transactionId: Long?,
+    val uuid: String
 )
 

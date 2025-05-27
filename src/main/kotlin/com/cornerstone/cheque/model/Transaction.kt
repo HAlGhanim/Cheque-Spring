@@ -21,13 +21,6 @@ data class Transaction(
     @Column(nullable = false)
     val amount: BigDecimal,
 
-
-    @Column(nullable = false)
-    val currency: String = "KWD",
-
-    @Column(nullable = false)
-    val convertedAmount: BigDecimal = amount,
-
     @Column(name = "created_at")
     val createdAt: LocalDateTime = LocalDateTime.now(),
 
@@ -37,15 +30,12 @@ data class TransactionRequest(
     val senderAccount: String,
     val receiverAccount: String,
     val amount: BigDecimal,
-    val currency: String
 )
 data class TransactionResponse(
     val id: Long,
     val senderAccountNumber: String,
     val receiverAccountNumber: String,
     val amount: BigDecimal,
-    val currency: String,
-    val convertedAmount: BigDecimal,
     val createdAt: LocalDateTime
 )
 enum class transactionType {

@@ -7,6 +7,7 @@ import com.cornerstone.cheque.repo.*
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import kotlin.plus
 
 @Service
 class InvoiceService(
@@ -16,7 +17,7 @@ class InvoiceService(
     private val accountRepository: AccountRepository
 ) {
 
-    fun create(request: InvoiceRequest, userId: String): InvoiceResponse {
+    fun create(request: InvoiceRequest, userId: String): TransferResponse {
         val fromUser = userRepository.findByEmail(userId)
             ?: throw IllegalArgumentException("From user not found")
 
@@ -37,6 +38,11 @@ class InvoiceService(
             throw IllegalArgumentException("Sender and receiver accounts must be different")
         }
 
+        senderAccount.balance -= request.amount
+        receiverAccount.balance += request.amount
+
+        accountRepository.save(senderAccount)
+        accountRepository.save(receiverAccount)
 
         val transaction = Transaction(
             senderAccount = senderAccount,
@@ -60,32 +66,32 @@ class InvoiceService(
         return toResponse(transferRepository.save(transfer))
     }
 
-    fun getById(id: Long): InvoiceResponse? =
+    fun getById(id: Long): TransferResponse? =
         transferRepository.findById(id).orElse(null)?.let { toResponse(it) }
 
-    fun getAll(): List<InvoiceResponse> =
+    fun getAll(): List<TransferResponse> =
         transferRepository.findAll().map { toResponse(it) }
 
-    fun getByUserId(userId: Long): List<InvoiceResponse> =
+    fun getByUserId(userId: Long): List<TransferResponse> =
         transferRepository.findByFromUserIdOrToUserId(userId, userId).map { toResponse(it) }
 
-    fun getMyInvoices(userEmail: String): List<InvoiceResponse> {
+    fun getMyInvoices(userEmail: String): List<TransferResponse> {
         val user = userRepository.findByEmail(userEmail)
             ?: throw IllegalArgumentException("User not found")
         return transferRepository.findByFromUserIdOrToUserId(user.id!!, user.id!!)
             .map { toResponse(it) }
     }
 
-    fun getByTransactionId(transactionId: Long): List<InvoiceResponse> =
+    fun getByTransactionId(transactionId: Long): List<TransferResponse> =
         transferRepository.findByTransactionId(transactionId).map { toResponse(it) }
 
-    fun getByAccountNumber(accountNumber: String): List<InvoiceResponse> =
+    fun getByAccountNumber(accountNumber: String): List<TransferResponse> =
         transferRepository.findByTransaction_SenderAccount_AccountNumberOrTransaction_ReceiverAccount_AccountNumber(
             accountNumber, accountNumber
         ).map { toResponse(it) }
 
-    private fun toResponse(transfer: Transfer): InvoiceResponse =
-        InvoiceResponse(
+    private fun toResponse(transfer: Transfer): TransferResponse =
+        TransferResponse(
             id = transfer.id!!,
             fromUserId = transfer.fromUser.id!!,
             toUserId = transfer.toUser.id!!,
@@ -109,7 +115,7 @@ enum class InvoiceType {
     LINK, TRANSACTION
 }
 
-data class InvoiceResponse(
+data class TransferResponse(
     val id: Long,
     val fromUserId: Long,
     val toUserId: Long,

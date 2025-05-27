@@ -26,54 +26,6 @@ class TransactionController(
     private val userService: UserService,
     private val accountService: AccountService
 ) {
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @PostMapping
-    fun create(@RequestBody request: TransactionRequest): ResponseEntity<TransactionResponse> {
-        val sender = accountRepository.findByAccountNumber(request.senderAccount)
-            ?: throw IllegalArgumentException("Sender account not found")
-
-        val receiver = accountRepository.findByAccountNumber(request.receiverAccount)
-            ?: throw IllegalArgumentException("Receiver account not found")
-
-        if (sender.balance < request.amount)
-            throw IllegalArgumentException("Insufficient balance")
-
-        if (sender.accountType == AccountType.CUSTOMER) {
-            val spendingLimit = sender.spendingLimit
-            if (spendingLimit == null || request.amount > spendingLimit.toBigDecimal()) {
-                throw IllegalArgumentException("Exceeded the spending limit")
-            }
-        }
-
-        sender.balance -= request.amount
-        receiver.balance += request.amount
-
-        accountRepository.save(sender)
-        accountRepository.save(receiver)
-
-        val transaction = Transaction(
-            senderAccount = sender,
-            receiverAccount = receiver,
-            amount = request.amount,
-            currency = request.currency,
-            createdAt = LocalDateTime.now()
-        )
-
-        val saved = service.create(transaction)
-
-        return ResponseEntity.ok(
-            TransactionResponse(
-                id = saved.id,
-                senderAccountNumber = sender.accountNumber,
-                receiverAccountNumber = receiver.accountNumber,
-                amount = saved.amount,
-                currency = saved.currency,
-                convertedAmount = saved.convertedAmount,
-                createdAt = saved.createdAt
-            )
-        )
-}
-
     @GetMapping("/getAll")
     fun getAll(): ResponseEntity<List<TransactionResponse>> =
         ResponseEntity.ok(service.getAll().map {
@@ -82,8 +34,6 @@ class TransactionController(
                 senderAccountNumber = it.senderAccount.accountNumber,
                 receiverAccountNumber = it.receiverAccount.accountNumber,
                 amount = it.amount,
-                currency = it.currency,
-                convertedAmount = it.convertedAmount,
                 createdAt = it.createdAt
 
             )

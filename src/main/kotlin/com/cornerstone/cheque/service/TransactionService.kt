@@ -13,17 +13,9 @@ import java.time.LocalDateTime
 @Service
 class TransactionService(
     private val repository: TransactionRepository,
-    private val accountRepository: AccountRepository,
-    private val currencyService: CurrencyService
-) {
+    private val accountRepository: AccountRepository) {
 
-    fun create(entity: Transaction): Transaction
 
-    {
-        val converted = currencyService.convertToKWD(entity.amount, entity.currency)
-        val updatedEntity = entity.copy(convertedAmount = converted)
-        return repository.save(updatedEntity)
-    }
 
     fun getById(id: Long): Transaction? =
         repository.findById(id).orElse(null)
@@ -58,8 +50,6 @@ class TransactionService(
                     senderAccountNumber = it.senderAccount.accountNumber,
                     receiverAccountNumber = it.receiverAccount.accountNumber,
                     amount = it.amount,
-                    currency = it.currency,
-                    convertedAmount = it.convertedAmount,
                     createdAt = it.createdAt
                 )
 

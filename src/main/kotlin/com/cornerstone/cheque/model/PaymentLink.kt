@@ -32,7 +32,7 @@ data class PaymentLink(
 )
 
 data class PaymentLinkRequest(
-    val accountNumber: String,
+    val myAccountNumber: String,
     val amount: BigDecimal,
     val description: String
 )

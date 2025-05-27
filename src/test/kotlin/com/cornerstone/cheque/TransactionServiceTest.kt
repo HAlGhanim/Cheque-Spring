@@ -1,7 +1,6 @@
 import com.cornerstone.cheque.model.*
 import com.cornerstone.cheque.repo.TransactionRepository
 import com.cornerstone.cheque.repo.AccountRepository
-import com.cornerstone.cheque.service.CurrencyService
 import com.cornerstone.cheque.service.TransactionService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

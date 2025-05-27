@@ -20,9 +20,6 @@ data class Account(
     @Column(name = "spending_limit")
     val spendingLimit: Int?,
 
-    @Column(nullable = false)
-    val currency: String,
-
     @Enumerated(EnumType.STRING)
     @Column(name = "account_type", nullable = false)
     var accountType: AccountType = AccountType.CUSTOMER,
@@ -36,7 +33,6 @@ enum class AccountType {
 }
 data class AccountRequest(
     val spendingLimit: Int?,
-    val currency: String,
     val accountType: AccountType,
 )
 data class AccountResponse(
@@ -44,7 +40,6 @@ data class AccountResponse(
     val userId: Long,
     val balance: BigDecimal,
     val spendingLimit: Int?,
-    val currency: String,
     val accountType: AccountType,
     val createdAt: LocalDateTime
 )

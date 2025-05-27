@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "invoices")
+@Table(name = "transfer")
 data class Transfer(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

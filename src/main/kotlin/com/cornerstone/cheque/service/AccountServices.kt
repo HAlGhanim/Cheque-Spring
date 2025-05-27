@@ -34,7 +34,6 @@ class AccountService(
             accountNumber = generateUniqueAccountNumber(),
             user = user,
             spendingLimit = request.spendingLimit,
-            currency = request.currency,
             accountType = request.accountType,
             createdAt = LocalDateTime.now()
         )
@@ -78,7 +77,6 @@ class AccountService(
             userId = account.user?.id ?: 0,
             balance = account.balance,
             spendingLimit = account.spendingLimit,
-            currency = account.currency,
             accountType = account.accountType,
             createdAt = account.createdAt
         )
