@@ -10,7 +10,7 @@ import java.security.Principal
 
 @PreAuthorize("hasRole('ADMIN')")
 @RestController
-@RequestMapping("/api/invoices")
+@RequestMapping("/api/transfer")
 class TransferController(private val invoiceService: TransferService) {
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
