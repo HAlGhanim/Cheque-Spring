@@ -15,7 +15,7 @@ class KYCController(
     private val service: KYCService,
     private val userRepository: UserRepository
 ) {
-    @PreAuthorize("hasRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping
     fun create(@RequestBody request: KYCRequest, principal: Principal): ResponseEntity<KYC> {
         val user = userRepository.findByEmail(principal.name)
@@ -24,7 +24,7 @@ class KYCController(
         return ResponseEntity.ok().build()
     }
 
-    @PreAuthorize("hasRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/user")
     fun getByUserId(principal: Principal): ResponseEntity<KYC> {
         val user = userRepository.findByEmail(principal.name)

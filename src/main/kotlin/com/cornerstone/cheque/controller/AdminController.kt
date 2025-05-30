@@ -5,7 +5,6 @@ import com.cornerstone.cheque.repo.AccountRepository
 import com.cornerstone.cheque.repo.UserRepository
 import com.cornerstone.cheque.service.*
 import jakarta.validation.constraints.NotNull
-import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
@@ -78,29 +77,16 @@ class AdminController(
         return ResponseEntity.ok().build()
     }
 
-    @GetMapping("/redeem/active/count")
-    fun getActiveCodeCount(): ResponseEntity<Any> {
-        val count = redeemService.countActiveCodes()
-        return ResponseEntity.ok(mapOf("activeCodes" to count))
-    }
-
-    @PostMapping("/redeem/generate")
-    fun generateCode(@RequestBody request: RedeemRequest): ResponseEntity<Any> {
-        val code = redeemService.generate(request.amount)
-        return ResponseEntity.ok(mapOf("code" to code.code, "amount" to code.amount))
-    }
-
-    @GetMapping("/kyc/getAll")
-    fun getAllKYC(): ResponseEntity<List<KYC>> =
-        ResponseEntity.ok(kycService.getAll())
-
-    @GetMapping("/kyc/{id}")
-    fun getKYCById(@PathVariable id: Long): ResponseEntity<KYC> =
-        ResponseEntity.ok(kycService.getById(id) ?: throw IllegalArgumentException("KYC not found"))
-
     @GetMapping("/accounts/getAll")
     fun getAllAccounts(): ResponseEntity<List<AccountResponse>> =
         ResponseEntity.ok(accountService.getAll())
+
+    @GetMapping("/accounts/id/{id}")
+    fun getAccountById(@PathVariable id: Long): ResponseEntity<AccountResponse> {
+        val account = accountService.getById(id)
+            ?: throw IllegalArgumentException("Account not found")
+        return ResponseEntity.ok(account)
+    }
 
     @GetMapping("/accounts/{accountNumber}")
     fun getAccountByNumber(@PathVariable accountNumber: String): ResponseEntity<AccountResponse> {
@@ -121,9 +107,66 @@ class AdminController(
             )
         })
 
+    @GetMapping("/transactions/id/{id}")
+    fun getTransactionById(@PathVariable id: Long): ResponseEntity<TransactionResponse> {
+        val transaction = transactionService.getById(id)
+            ?: throw IllegalArgumentException("Transaction not found")
+        return ResponseEntity.ok(
+            TransactionResponse(
+                id = transaction.id,
+                senderAccountNumber = transaction.senderAccount.accountNumber,
+                receiverAccountNumber = transaction.receiverAccount.accountNumber,
+                amount = transaction.amount,
+                createdAt = transaction.createdAt
+            )
+        )
+    }
+
+    @GetMapping("/transactions/account/{accountNumber}")
+    fun getTransactionsByAccountNumber(@PathVariable accountNumber: String): ResponseEntity<List<com.cornerstone.cheque.model.TransactionResponse>> {
+        val transactions = transactionService.getByAccountNumber(accountNumber)
+        return ResponseEntity.ok(transactions)
+    }
+
+    @GetMapping("/transfers/getAll")
+    fun getAllTransfers(): ResponseEntity<List<TransferResponse>> =
+        ResponseEntity.ok(transferService.getAll())
+
+    @GetMapping("/transfers/id/{id}")
+    fun getTransferById(@PathVariable id: Long): ResponseEntity<TransferResponse> {
+        val transfer = transferService.getById(id)
+            ?: throw IllegalArgumentException("Transfer not found")
+        return ResponseEntity.ok(transfer)
+    }
+
+    @GetMapping("/transfers/user/{userId}")
+    fun getTransfersByUserId(@PathVariable userId: Long): ResponseEntity<List<TransferResponse>> {
+        val transfers = transferService.getByUserId(userId)
+        return ResponseEntity.ok(transfers)
+    }
+
+    @GetMapping("/transfers/transaction/{transactionId}")
+    fun getTransfersByTransactionId(@PathVariable transactionId: Long): ResponseEntity<List<TransferResponse>> {
+        val transfers = transferService.getByTransactionId(transactionId)
+        return ResponseEntity.ok(transfers)
+    }
+
+    @GetMapping("/transfers/account/{accountNumber}")
+    fun getTransfersByAccountNumber(@PathVariable accountNumber: String): ResponseEntity<List<TransferResponse>> {
+        val transfers = transferService.getByAccountNumber(accountNumber)
+        return ResponseEntity.ok(transfers)
+    }
+
     @GetMapping("/payment-links/getAll")
     fun getAllPaymentLinks() =
         ResponseEntity.ok(paymentLinkService.getAll().map { paymentLinkService.toResponse(it) })
+
+    @GetMapping("/payment-links/id/{id}")
+    fun getPaymentLinkByIdDirect(@PathVariable id: Long): ResponseEntity<PaymentLinkResponse> {
+        val paymentLink = paymentLinkService.getById(id)
+            .orElseThrow { IllegalArgumentException("Payment link not found") }
+        return ResponseEntity.ok(paymentLinkService.toResponse(paymentLink))
+    }
 
     @GetMapping("/payment-links/{id}")
     fun getPaymentLinkById(@PathVariable id: Long): ResponseEntity<PaymentLinkResponse> =
@@ -135,9 +178,25 @@ class AdminController(
         return ResponseEntity.noContent().build()
     }
 
-    @GetMapping("/transfers/getAll")
-    fun getAllTransfers(): ResponseEntity<List<TransferResponse>> =
-        ResponseEntity.ok(transferService.getAll())
+    @GetMapping("/kyc/getAll")
+    fun getAllKYC(): ResponseEntity<List<KYC>> =
+        ResponseEntity.ok(kycService.getAll())
+
+    @GetMapping("/kyc/{id}")
+    fun getKYCById(@PathVariable id: Long): ResponseEntity<KYC> =
+        ResponseEntity.ok(kycService.getById(id) ?: throw IllegalArgumentException("KYC not found"))
+
+    @GetMapping("/redeem/active/count")
+    fun getActiveCodeCount(): ResponseEntity<Any> {
+        val count = redeemService.countActiveCodes()
+        return ResponseEntity.ok(mapOf("activeCodes" to count))
+    }
+
+    @PostMapping("/redeem/generate")
+    fun generateCode(@RequestBody request: RedeemRequest): ResponseEntity<Any> {
+        val code = redeemService.generate(request.amount)
+        return ResponseEntity.ok(mapOf("code" to code.code, "amount" to code.amount))
+    }
 
     private fun calculateGrowth(): Double = 24.8
 }

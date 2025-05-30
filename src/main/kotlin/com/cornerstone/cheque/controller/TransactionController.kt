@@ -20,7 +20,7 @@ class TransactionController(
     private val accountService: AccountService
 ) {
 
-    @PreAuthorize("hasRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping("/deposit")
     fun deposit(@RequestBody request: DepositRequest, principal: Principal): ResponseEntity<AccountResponse> {
         val user = userService.findByEmail(principal.name)
@@ -33,7 +33,7 @@ class TransactionController(
         return ResponseEntity.ok(accountService.getByAccountNumber(updated.accountNumber))
     }
 
-    @PreAuthorize("hasRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping("/withdraw")
     fun withdraw(@RequestBody request: DepositRequest, principal: Principal): ResponseEntity<AccountResponse> {
         val user = userService.findByEmail(principal.name)

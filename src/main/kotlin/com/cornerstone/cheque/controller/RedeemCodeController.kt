@@ -12,7 +12,7 @@ class RedeemController(
     private val redeemService: RedeemService
 ) {
 
-    @PreAuthorize("hasRole('USER,'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER,'ADMIN')")
     @PostMapping("/use/{code}")
     fun useCode(@PathVariable code: String, principal: Principal): ResponseEntity<Any> {
         val message = redeemService.redeem(code, principal.name)

@@ -12,12 +12,12 @@ import java.security.Principal
 class PaymentLinkController(
     private val service: PaymentLinkService
 ) {
-    @PreAuthorize("hasRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping
     fun create(@RequestBody request: PaymentLinkRequest, principal: Principal): ResponseEntity<PaymentLinkResponse> =
         ResponseEntity.ok(service.toResponse(service.create(request, principal.name)))
 
-    @PreAuthorize("hasRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping("/use/{uuid}")
     fun use(@PathVariable uuid: String, principal: Principal): ResponseEntity<Any> {
         return try {

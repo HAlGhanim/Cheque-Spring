@@ -15,7 +15,7 @@ class AccountController(
     private val accountService: AccountService,
     private val userService: UserService
 ) {
-    @PreAuthorize("hasRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping("/create")
     fun createAccount(@RequestBody request: AccountRequest, principal: Principal): ResponseEntity<Any> {
         val user = userService.findByEmail(principal.name)
@@ -24,7 +24,7 @@ class AccountController(
         return ResponseEntity.ok(accountService.create(userId, request))
     }
 
-    @PreAuthorize("hasRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/my")
     fun getMyAccounts(principal: Principal): ResponseEntity<List<AccountResponse>> {
         val user = userService.findByEmail(principal.name)

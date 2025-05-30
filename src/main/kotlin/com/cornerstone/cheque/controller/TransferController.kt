@@ -12,14 +12,14 @@ import java.security.Principal
 @RequestMapping("/api/transfer")
 class TransferController(private val transferService: TransferService) {
 
-    @PreAuthorize("hasRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping
     fun create(@RequestBody request: TransferRequest, principal: Principal): ResponseEntity<Any> {
         val response = transferService.create(request, principal.name)
         return ResponseEntity.ok(response)
     }
 
-    @PreAuthorize("hasRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/my")
     fun getMyTransfers(principal: Principal): ResponseEntity<List<TransferResponse>> =
         ResponseEntity.ok(transferService.getMyTransfers(principal.name))
