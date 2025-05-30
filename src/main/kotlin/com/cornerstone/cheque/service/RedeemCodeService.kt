@@ -52,4 +52,7 @@ class RedeemService(
 
         return "Balance updated by ${redeemCode.amount}. New balance: ${account.balance}"
     }
+    fun countActiveCodes(): Long {
+        return redeemCodeRepository.countByUsedFalse()
+    }
 }

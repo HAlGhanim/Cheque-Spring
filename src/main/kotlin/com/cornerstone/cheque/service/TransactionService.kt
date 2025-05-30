@@ -12,16 +12,16 @@ import java.time.LocalDateTime
 
 @Service
 class TransactionService(
-    private val repository: TransactionRepository,
+    private val transactionRepository: TransactionRepository,
     private val accountRepository: AccountRepository) {
 
 
 
     fun getById(id: Long): Transaction? =
-        repository.findById(id).orElse(null)
+        transactionRepository.findById(id).orElse(null)
 
     fun getAll(): List<Transaction> =
-        repository.findAll()
+        transactionRepository.findAll()
 
     fun deposit(amount: BigDecimal, account: Account): Account {
         account.balance += amount
@@ -34,12 +34,16 @@ class TransactionService(
         return accountRepository.save(account)
     }
 
+    fun getTotalTransactionAmount(): Int {
+        return transactionRepository.getTotalTransactionAmount() ?: 0
+    }
+
 
     fun getByAccountNumber(accountNumber: String): List<TransactionResponse> {
         val account = accountRepository.findByAccountNumber(accountNumber)
             ?: throw IllegalArgumentException("Account not found")
 
-        return repository.findAll()
+        return transactionRepository.findAll()
             .filter {
                 (it.senderAccount?.accountNumber == account.accountNumber) ||
                         (it.receiverAccount?.accountNumber == account.accountNumber)

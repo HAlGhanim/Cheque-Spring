@@ -31,6 +31,12 @@ class JwtAuthenticationFilter(
 
         if (jwtService.isTokenValid(token) && SecurityContextHolder.getContext().authentication == null) {
             val username = jwtService.extractUsername(token)
+            val role = jwtService.extractRole(token)
+
+            if (request.requestURI.startsWith("/api/admin") && role != "ADMIN") {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Admin access required")
+                return
+            }
 
             val userDetails = userDetailsService.loadUserByUsername(username)
 
