@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface RedeemCodeRepository : JpaRepository<RedeemCode, Long> {
     fun findByCode(code: String): RedeemCode?
+    fun countByUsedFalse(): Long
 }
