@@ -70,7 +70,7 @@ class TransferService(
     fun getByUserId(userId: Long): List<TransferResponse> =
         transferRepository.findByFromUserIdOrToUserId(userId, userId).map { toResponse(it) }
 
-    fun getMyInvoices(userEmail: String): List<TransferResponse> {
+    fun getMyTransfers(userEmail: String): List<TransferResponse> {
         val user = userRepository.findByEmail(userEmail)
             ?: throw IllegalArgumentException("User not found")
         return transferRepository.findByFromUserIdOrToUserId(user.id!!, user.id!!)

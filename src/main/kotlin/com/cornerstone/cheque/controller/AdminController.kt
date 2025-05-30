@@ -5,6 +5,7 @@ import com.cornerstone.cheque.repo.AccountRepository
 import com.cornerstone.cheque.repo.UserRepository
 import com.cornerstone.cheque.service.*
 import jakarta.validation.constraints.NotNull
+import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
@@ -47,10 +48,10 @@ class AdminController(
 
     @GetMapping("/users")
     fun getUsers(
-        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "1") page: Int,
         @RequestParam(defaultValue = "10") size: Int,
         @RequestParam(required = false) role: String?
-    ): ResponseEntity<Any> {
+    ): ResponseEntity<List<User>> {
         val users = userService.getUsers(page, size, role)
         return ResponseEntity.ok(users)
     }

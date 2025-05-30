@@ -4,6 +4,7 @@ import com.cornerstone.cheque.model.Role
 import com.cornerstone.cheque.model.User
 import com.cornerstone.cheque.repo.UserRepository
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -26,14 +27,16 @@ class UserService(private val userRepository: UserRepository) {
         return userRepository.count()
     }
 
-    fun getUsers(page: Int, size: Int, role: String?): Any {
-        val pageable = PageRequest.of(page, size)
+    fun getUsers(page: Int, size: Int, role: String?): List<User> {
+        val pageIndex = if (page > 0) page - 1 else 0
+        val pageable = PageRequest.of(pageIndex, size)
         return if (role != null) {
-            userRepository.findByRole(Role.valueOf(role.uppercase()), pageable)
+            userRepository.findByRole(Role.valueOf(role.uppercase()), pageable).content
         } else {
             userRepository.findAll(pageable).content
         }
     }
+
 
     fun getUserById(userId: Long): User {
         return userRepository.findById(userId)

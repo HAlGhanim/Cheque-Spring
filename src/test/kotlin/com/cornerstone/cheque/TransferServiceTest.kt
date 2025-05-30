@@ -11,7 +11,7 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 import kotlin.test.*
 
-class InvoiceServiceTest {
+class TransferServiceTest {
 
     private lateinit var transferRepository: TransferRepository
     private lateinit var transactionRepository: TransactionRepository

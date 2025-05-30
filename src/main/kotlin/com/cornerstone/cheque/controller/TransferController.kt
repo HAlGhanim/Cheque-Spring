@@ -10,17 +10,17 @@ import java.security.Principal
 
 @RestController
 @RequestMapping("/api/transfer")
-class TransferController(private val invoiceService: TransferService) {
+class TransferController(private val transferService: TransferService) {
 
     @PreAuthorize("hasRole('USER','ADMIN')")
     @PostMapping
     fun create(@RequestBody request: TransferRequest, principal: Principal): ResponseEntity<Any> {
-        val response = invoiceService.create(request, principal.name)
+        val response = transferService.create(request, principal.name)
         return ResponseEntity.ok(response)
     }
 
     @PreAuthorize("hasRole('USER','ADMIN')")
     @GetMapping("/my")
-    fun getMyInvoices(principal: Principal): ResponseEntity<List<TransferResponse>> =
-        ResponseEntity.ok(invoiceService.getMyInvoices(principal.name))
+    fun getMyTransfers(principal: Principal): ResponseEntity<List<TransferResponse>> =
+        ResponseEntity.ok(transferService.getMyTransfers(principal.name))
 }
