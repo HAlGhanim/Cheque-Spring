@@ -6,6 +6,9 @@ import com.cornerstone.cheque.repo.UserRepository
 import com.cornerstone.cheque.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
 
@@ -32,4 +35,14 @@ class UserController(
         )
         return ResponseEntity.ok(service.create(newUser))
     }
+
+    @GetMapping("/users/me")
+    @PreAuthorize("isAuthenticated()")
+    fun getCurrentUser(): ResponseEntity<User> {
+        val email = SecurityContextHolder.getContext().authentication.name
+        val user = userRepository.findByEmail(email)
+            ?: throw UsernameNotFoundException("User not found with email: $email")
+        return ResponseEntity.ok(user)
+    }
+
 }

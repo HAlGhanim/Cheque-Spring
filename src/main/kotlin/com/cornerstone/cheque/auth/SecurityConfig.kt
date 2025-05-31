@@ -25,6 +25,7 @@ class SecurityConfig(private val jwtAuthenticationFilter: JwtAuthenticationFilte
                 authorize
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/api/users/**").authenticated()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(
