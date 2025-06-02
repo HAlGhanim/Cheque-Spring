@@ -2,6 +2,7 @@ package com.cornerstone.cheque.controller
 
 import com.cornerstone.cheque.model.AccountResponse
 import com.cornerstone.cheque.model.DepositRequest
+import com.cornerstone.cheque.model.TransactionResponse
 import com.cornerstone.cheque.service.AccountService
 import com.cornerstone.cheque.service.TransactionService
 import com.cornerstone.cheque.service.UserService
@@ -44,5 +45,13 @@ class TransactionController(
 
         val updated = service.withdraw(request.amount, accountRepository.findByAccountNumber(account.accountNumber)!!)
         return ResponseEntity.ok(accountService.getByAccountNumber(updated.accountNumber))
+    }
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/byAccount/{accountNumber}")
+    fun getTransactionsByAccountNumber(
+        @PathVariable accountNumber: String
+    ): ResponseEntity<List<TransactionResponse>> {
+        val transactions = service.getByAccountNumber(accountNumber)
+        return ResponseEntity.ok(transactions)
     }
 }
