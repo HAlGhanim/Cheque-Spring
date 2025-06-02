@@ -21,19 +21,9 @@ class AccountService(
             throw Exception("User already has an account...")
         }
 
-        when (request.accountType) {
-            AccountType.CUSTOMER -> require(request.spendingLimit != null && request.spendingLimit > 0) {
-                "Customer accounts must have a spending limit greater than 0"
-            }
-            AccountType.MERCHANT -> require(request.spendingLimit == null || request.spendingLimit == 0) {
-                "Merchant accounts cannot have a spending limit"
-            }
-        }
-
         val account = Account(
             accountNumber = generateUniqueAccountNumber(),
             user = user,
-            spendingLimit = request.spendingLimit,
             accountType = request.accountType,
             createdAt = LocalDateTime.now()
         )
