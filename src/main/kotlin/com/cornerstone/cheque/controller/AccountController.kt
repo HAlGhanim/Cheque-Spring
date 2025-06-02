@@ -15,7 +15,7 @@ class AccountController(
     private val accountService: AccountService,
     private val userService: UserService
 ) {
-//    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping("/create")
     fun createAccount(@RequestBody request: AccountRequest, principal: Principal): ResponseEntity<Any> {
         val user = userService.findByEmail(principal.name)
