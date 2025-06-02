@@ -18,7 +18,7 @@ data class Account(
     var balance: BigDecimal = BigDecimal.ZERO,
 
     @Column(name = "spending_limit")
-    val spendingLimit: Int?,
+    val spendingLimit: Int? = 3000,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "account_type", nullable = false)
@@ -32,8 +32,7 @@ enum class AccountType {
     CUSTOMER, MERCHANT
 }
 data class AccountRequest(
-    val spendingLimit: Int?,
-    val accountType: AccountType,
+    val accountType: AccountType
 )
 data class AccountResponse(
     val accountNumber: String,

@@ -1,5 +1,7 @@
 package com.cornerstone.cheque.controller
 
+import com.cornerstone.cheque.auth.jwt.AuthResponse
+import com.cornerstone.cheque.auth.jwt.JwtService
 import com.cornerstone.cheque.model.Role
 import com.cornerstone.cheque.model.User
 import com.cornerstone.cheque.repo.UserRepository
@@ -15,9 +17,9 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api")
 class UserController(
-    private val service: UserService,
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtService: JwtService
 ) {
 
     @PostMapping("/auth/register")
@@ -33,8 +35,13 @@ class UserController(
             status = "Active",
             joinedDate = entity.joinedDate
         )
-        return ResponseEntity.ok(service.create(newUser))
+        userRepository.save(newUser)
+        val token = jwtService.generateToken(newUser.email,  newUser.role.toString())
+
+        val response = AuthResponse(token = token, user = newUser)
+        return ResponseEntity.ok(response)
     }
+
 
     @GetMapping("/users/me")
     @PreAuthorize("isAuthenticated()")
