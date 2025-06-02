@@ -1,5 +1,6 @@
 package com.cornerstone.cheque.auth.jwt
 
+import com.cornerstone.cheque.model.User
 import com.cornerstone.cheque.repo.UserRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
@@ -25,7 +26,7 @@ class AuthenticationController(
                 ?: throw UsernameNotFoundException("User not found")
 
             val token = jwtService.generateToken(request.email, user.role.name)
-            return ResponseEntity.ok(AuthResponse(token))
+            return ResponseEntity.ok(AuthResponse(token = token, user = user))
         } else {
             throw UsernameNotFoundException("Invalid credentials")
         }
@@ -33,4 +34,4 @@ class AuthenticationController(
 }
 
 data class AuthRequest(val email: String, val password: String)
-data class AuthResponse(val token: String)
+data class AuthResponse(val token: String, val user: User)
