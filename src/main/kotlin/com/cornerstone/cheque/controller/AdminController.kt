@@ -198,6 +198,32 @@ class AdminController(
         return ResponseEntity.ok(mapOf("code" to code.code, "amount" to code.amount))
     }
 
+    @GetMapping("/redeem/total/count")
+    fun getTotalCodeCount(): ResponseEntity<Any> {
+        val count = redeemService.countTotalCodes()
+        return ResponseEntity.ok(mapOf("totalCodes" to count))
+    }
+
+    @GetMapping("/redeem/inactive/count")
+    fun getInactiveCodeCount(): ResponseEntity<Any> {
+        val count = redeemService.countInactiveCodes()
+        return ResponseEntity.ok(mapOf("inactiveCodes" to count))
+    }
+
+    @GetMapping("/redeem/all")
+    fun getAllCodesWithUsers(): ResponseEntity<List<RedeemCodeResponse>> {
+        val codes = redeemService.getAllCodesWithUsers().map {
+            RedeemCodeResponse(
+                id = it.id,
+                code = it.code,
+                amount = it.amount,
+                used = it.used,
+                userEmail = it.user?.email
+            )
+        }
+        return ResponseEntity.ok(codes)
+    }
+
     private fun calculateGrowth(): Double = 24.8
 }
 
@@ -222,4 +248,12 @@ data class TransactionResponse(
     val receiverAccountNumber: String,
     val amount: BigDecimal,
     val createdAt: LocalDateTime
+)
+
+data class RedeemCodeResponse(
+    val id: Long,
+    val code: String,
+    val amount: BigDecimal,
+    val used: Boolean,
+    val userEmail: String?
 )

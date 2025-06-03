@@ -28,7 +28,6 @@ class RedeemService(
 
     @Transactional
     fun redeem(code: String, userEmail: String): String {
-
         val user = userRepository.findByEmail(userEmail)
             ?: throw IllegalArgumentException("User not found")
 
@@ -38,21 +37,33 @@ class RedeemService(
         val redeemCode = redeemCodeRepository.findByCode(code)
             ?: throw IllegalArgumentException("Invalid code")
 
-
         if (redeemCode.used) {
             throw IllegalStateException("Code already used")
         }
 
-        // Update account balance
+        // Update account balance and associate user with the code
         account.balance += redeemCode.amount
         redeemCode.used = true
+        redeemCode.user = user // Set the user who redeemed the code
 
         accountRepository.save(account)
-        redeemCodeRepository.save(redeemCode)
-
+         redeemCodeRepository.save(redeemCode)
         return "Balance updated by ${redeemCode.amount}. New balance: ${account.balance}"
     }
+
     fun countActiveCodes(): Long {
         return redeemCodeRepository.countByUsedFalse()
+    }
+
+    fun countInactiveCodes(): Long {
+        return redeemCodeRepository.countByUsedTrue()
+    }
+
+    fun countTotalCodes(): Long {
+        return redeemCodeRepository.count()
+    }
+
+    fun getAllCodesWithUsers(): List<RedeemCode> {
+        return redeemCodeRepository.findAllWithUser()
     }
 }

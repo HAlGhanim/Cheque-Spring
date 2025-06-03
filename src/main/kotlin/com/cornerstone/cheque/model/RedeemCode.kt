@@ -17,5 +17,9 @@ data class RedeemCode(
     val amount: BigDecimal,
 
     @Column(nullable = false)
-    var used: Boolean = false
+    var used: Boolean = false,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    var user: User? = null
 )
