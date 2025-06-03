@@ -28,7 +28,7 @@ class AdminController(
 
     data class DashboardStats(
         val totalUsers: Long,
-        val totalTransactions: Int,
+        val totalTransactions: Long,
         val growthPercentage: Double,
         val lastUpdated: LocalDateTime
     )
@@ -36,7 +36,7 @@ class AdminController(
     @GetMapping("/dashboard")
     fun getDashboardStats(): ResponseEntity<DashboardStats> {
         val totalUsers = userService.getTotalUsers()
-        val totalTransactions = transactionService.getTotalTransactionAmount()
+        val totalTransactions = transactionService.getTotalTransactionCount() // Updated method
         val growthPercentage = calculateGrowth()
         val lastUpdated = LocalDateTime.now()
 

@@ -38,6 +38,10 @@ class TransactionService(
         return transactionRepository.getTotalTransactionAmount() ?: 0
     }
 
+    fun getTotalTransactionCount(): Long {
+        return transactionRepository.count()
+    }
+
 
     fun getByAccountNumber(accountNumber: String): List<TransactionResponse> {
         val account = accountRepository.findByAccountNumber(accountNumber)

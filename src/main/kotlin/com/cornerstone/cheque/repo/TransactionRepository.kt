@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository
 interface TransactionRepository : JpaRepository<Transaction, Long> {
     @Query("SELECT SUM(t.amount) FROM Transaction t")
     fun getTotalTransactionAmount(): Int?
+    override fun count(): Long
 }
